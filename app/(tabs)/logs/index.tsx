@@ -1,5 +1,10 @@
+import * as schema from "@/db/schema";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useRouter } from "expo-router";
+import { openDatabaseSync, useSQLiteContext } from 'expo-sqlite';
+import { useEffect, useState } from 'react';
 import {
     FlatList,
     Pressable,
@@ -29,24 +34,18 @@ const styles = StyleSheet.create({
     },
 });
 
-type WorkoutExercise = {
-    name: string,
-    setCount: number,
-}
-type WorkoutProps = {
-    id: string,
-    date: Date,
-    title: string,
-    duration: number,
-    exercises: Array<WorkoutExercise>,
-}
-function Workout(item: WorkoutProps) {
+function Workout(item: schema.LogsTableSelectType) {
     const router = useRouter();
+
+    const startTime = new Date(item.startTime);
+    const endTime = item.endTime ? new Date(item.endTime) : null;
+    const durationMins = item.endTime ? (item.endTime - item.startTime) / 1000 / 60 : null;
+    const duration = durationMins ? `${durationMins} mins` : "";
 
     const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
     const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEV"];
 
-    function gotoWorkout() {
+    async function gotoWorkout() {
         router.navigate({
             pathname: "/(tabs)/logs/[id]",
             params: {
@@ -64,9 +63,9 @@ function Workout(item: WorkoutProps) {
                     justifyContent: "center",
                 }}
             >
-                <Text style={styles.item}>{daysOfWeek[item.date.getDay()]}</Text>
-                <Text style={styles.item}>{item.date.getDate().toString().padStart(2, "0")}</Text>
-                <Text style={styles.item}>{months[item.date.getMonth() - 1]}</Text>
+                <Text style={styles.item}>{daysOfWeek[startTime.getDay()]}</Text>
+                <Text style={styles.item}>{startTime.getDate().toString().padStart(2, "0")}</Text>
+                <Text style={styles.item}>{months[startTime.getMonth() - 1]}</Text>
             </View>
             <View
                 style={{
@@ -83,7 +82,7 @@ function Workout(item: WorkoutProps) {
                     }}
                 >
                     <Text style={styles.item}>{item.title}</Text>
-                    <Text style={styles.item}>{item.duration} mins</Text>
+                    <Text style={styles.item}>{duration}</Text>
                 </View>
                 <View>
                     {
@@ -93,7 +92,7 @@ function Workout(item: WorkoutProps) {
                                     key={index}
                                     style={styles.item}
                                 >
-                                    {exercise.setCount}x {exercise.name}
+                                    {exercise.set_count}x {exercise.name}
                                 </Text>
                             )
                         })
@@ -105,57 +104,45 @@ function Workout(item: WorkoutProps) {
 }
 
 export default function Index() {
+    const debugDB = openDatabaseSync("LogDatabase");
+    useDrizzleStudio(debugDB);
+
+    const logDB = drizzle(useSQLiteContext(), { schema });
+    const [logs, setLogs] = useState<Array<schema.LogsTableSelectType>>([]);
     const router = useRouter();
 
-    function handleCreateWorkout() {
+    async function handleCreateWorkout() {
+        const newLog = await logDB
+            .insert(schema.LogsTable)
+            .values({
+                title: "New Workout",
+                startTime: new Date().getTime(),
+            }).returning();
+
         router.navigate({
             pathname: "/(tabs)/logs/[id]",
             params: {
-                id: "aaaabbbb-cccc-dddd-eeee-ffffgggghhhh",
+                id: newLog[0].id,
             },
         });
     }
 
+    useEffect(() => {
+        (async () => {
+            const logs = await logDB
+                .query.LogsTable.findMany({
+                    with: {
+                        exercises: true
+                    }
+                });
+            setLogs(logs);
+        })();
+    }, []);
+
     return (
         <View style={styles.container}>
             <FlatList
-                data={[
-                    {
-                        id: "d9c3b0b4-c113-4a04-82eb-1f530c548f6a",
-                        date: new Date(2025, 11, 1, 4, 30),
-                        title: "Upper 2",
-                        duration: 45,
-                        exercises: [
-                            {name: "Incline bench press", setCount: 2},
-                            {name: "Military press", setCount: 2},
-                            {name: "Bentover row", setCount: 2},
-                            {name: "Close-grip pulldown", setCount: 2},
-                        ]
-                    },
-                    {
-                        id: "24599481-e716-4ada-b54d-0002d4d527cb",
-                        date: new Date(2025, 11, 3, 5, 15),
-                        title: "Legs",
-                        duration: 32,
-                        exercises: [
-                            {name: "Hex-bar deadlift", setCount: 2},
-                            {name: "Seated leg curls", setCount: 2},
-                            {name: "Leg extensions", setCount: 2},
-                        ]
-                    },
-                    {
-                        id: "51198a5e-4cfa-4189-b426-c8bb0d4454d5",
-                        date: new Date(2025, 11, 4, 6, 30),
-                        title: "Upper 1",
-                        duration: 40,
-                        exercises: [
-                            {name: "Dumbbell bench press", setCount: 2},
-                            {name: "Seated shoulder press", setCount: 2},
-                            {name: "Close-grip cable row", setCount: 2},
-                            {name: "Pulldown", setCount: 2},
-                        ]
-                    },
-                ]}
+                data={logs}
                 renderItem={({item}) => (
                     <Workout {...item} />
                 )}

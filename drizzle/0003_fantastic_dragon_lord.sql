@@ -1,0 +1,1 @@
+ALTER TABLE `Logs` DROP COLUMN `date`;
