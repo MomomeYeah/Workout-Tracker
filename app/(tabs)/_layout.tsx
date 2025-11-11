@@ -34,6 +34,15 @@ export default function RootLayout() {
                     )
                 }}
             />
+            <Tabs.Screen
+                name="seed"
+                options={{
+                    title: "Seed",
+                    tabBarIcon: ({ color, focused }) => (
+                        <Ionicons name={focused ? 'leaf' : 'leaf-outline'} color={color} size={24} />
+                    )
+                }}
+            />
         </Tabs>
     );
 }

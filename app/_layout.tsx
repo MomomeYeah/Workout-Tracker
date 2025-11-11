@@ -6,7 +6,7 @@ import { SQLiteProvider } from "expo-sqlite";
 
 export default function RootLayout() {
     const databaseName = "LogDatabase";
-    
+
     return (
         <SQLiteProvider
             databaseName={databaseName}

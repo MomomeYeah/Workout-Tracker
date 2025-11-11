@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useRouter } from "expo-router";
-import { openDatabaseSync, useSQLiteContext } from 'expo-sqlite';
+import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import {
     FlatList,
@@ -92,7 +92,7 @@ function Workout(item: schema.LogsTableSelectType) {
                                     key={index}
                                     style={styles.item}
                                 >
-                                    {exercise.set_count}x {exercise.name}
+                                    { exercise.sets.length }x {exercise.exercise?.name}
                                 </Text>
                             )
                         })
@@ -104,12 +104,12 @@ function Workout(item: schema.LogsTableSelectType) {
 }
 
 export default function Index() {
-    const debugDB = openDatabaseSync("LogDatabase");
-    useDrizzleStudio(debugDB);
-
     const logDB = drizzle(useSQLiteContext(), { schema });
     const [logs, setLogs] = useState<Array<schema.LogsTableSelectType>>([]);
     const router = useRouter();
+
+    console.log(useSQLiteContext());
+    useDrizzleStudio(useSQLiteContext());
 
     async function handleCreateWorkout() {
         const newLog = await logDB
@@ -132,7 +132,12 @@ export default function Index() {
             const logs = await logDB
                 .query.LogsTable.findMany({
                     with: {
-                        exercises: true
+                        exercises: {
+                            with: {
+                                exercise: true,
+                                sets: true,
+                            }
+                        }
                     }
                 });
             setLogs(logs);
