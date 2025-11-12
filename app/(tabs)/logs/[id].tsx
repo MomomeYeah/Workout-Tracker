@@ -1,3 +1,4 @@
+import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { eq } from "drizzle-orm";
@@ -5,33 +6,13 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: "#25292e",
-    },
-    text: {
-        color: "#fff"
-    },
-    input: {
-        color: "#fff",
-        borderWidth: 1,
-        borderColor: "#fff",
-        padding: 10,
-    },
-});
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 function Exercise(exercise: schema.LogExercisesTableSelectType) {
     return (
         <View
             style={{
-                ...styles.container,
-                borderWidth: 1,
-                borderColor: "#fff",
-                borderRadius: 5,
-                padding: 10,
-                marginBottom: 10,
+                ...styles.card
             }}
         >
             <Text style={{...styles.text}}>
@@ -42,7 +23,6 @@ function Exercise(exercise: schema.LogExercisesTableSelectType) {
                     <View
                         key={set.id}
                         style={{
-                            ...styles.container,
                             flex: 1,
                             flexDirection: "row",
                         }}
@@ -231,6 +211,7 @@ export default function Workout() {
                         verticalAlign: "top"
                     }}
                     value={notes}
+                    multiline
                     placeholder="Notes"
                     placeholderTextColor="#fff"
                     onChangeText={setNotes}

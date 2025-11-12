@@ -1,9 +1,10 @@
+import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import * as seedData from "@/db/seed-data";
 import { eq } from "drizzle-orm";
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
 
 export default function SeedScreen() {
     const logDB = drizzle(useSQLiteContext(), { schema });
@@ -71,26 +72,9 @@ export default function SeedScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={{...styles.container, ...styles.centredFlex}}>
             <Text style={styles.text}>Seed screen</Text>
             <Button title="Go" onPress={handleSeed} />
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#25292e",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    text: {
-        color: "#fff"
-    },
-    button: {
-        fontSize: 20,
-        textDecorationLine: "underline",
-        color: "#fff"
-    },
-});

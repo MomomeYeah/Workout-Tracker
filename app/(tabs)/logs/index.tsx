@@ -1,4 +1,5 @@
 import AddItemButton from "@/components/add-item-button";
+import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
@@ -7,31 +8,9 @@ import { useSQLiteContext } from 'expo-sqlite';
 import {
     FlatList,
     Pressable,
-    StyleSheet,
     Text,
     View
 } from "react-native";
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#25292e",
-        padding: 5,
-    },
-    workout: {
-        flex: 1,
-        flexDirection: "row",
-        borderWidth: 1,
-        borderColor: "#fff",
-        borderRadius: 5,
-        padding: 10,
-        paddingLeft: 0,
-        marginBottom: 10,
-    },
-    item: {
-        color: "#fff",
-    },
-});
 
 function Workout(item: schema.LogsTableSelectType) {
     const router = useRouter();
@@ -54,7 +33,15 @@ function Workout(item: schema.LogsTableSelectType) {
     }
 
     return (
-        <Pressable style={styles.workout} onPress={gotoWorkout}>
+        <Pressable
+            style={{
+                ...styles.card,
+                paddingLeft: 0,
+                flex: 1,
+                flexDirection: "row",
+            }}
+            onPress={gotoWorkout}
+        >
             <View
                 style={{
                     flex: 1,
@@ -62,9 +49,9 @@ function Workout(item: schema.LogsTableSelectType) {
                     justifyContent: "center",
                 }}
             >
-                <Text style={styles.item}>{daysOfWeek[startTime.getDay()]}</Text>
-                <Text style={styles.item}>{startTime.getDate().toString().padStart(2, "0")}</Text>
-                <Text style={styles.item}>{months[startTime.getMonth() - 1]}</Text>
+                <Text style={styles.text}>{daysOfWeek[startTime.getDay()]}</Text>
+                <Text style={styles.text}>{startTime.getDate().toString().padStart(2, "0")}</Text>
+                <Text style={styles.text}>{months[startTime.getMonth() - 1]}</Text>
             </View>
             <View
                 style={{
@@ -80,8 +67,8 @@ function Workout(item: schema.LogsTableSelectType) {
                         justifyContent: "space-between"
                     }}
                 >
-                    <Text style={styles.item}>{item.title}</Text>
-                    <Text style={styles.item}>{duration}</Text>
+                    <Text style={styles.text}>{item.title}</Text>
+                    <Text style={styles.text}>{duration}</Text>
                 </View>
                 <View>
                     {
@@ -89,7 +76,7 @@ function Workout(item: schema.LogsTableSelectType) {
                             return (
                                 <Text
                                     key={index}
-                                    style={styles.item}
+                                    style={styles.text}
                                 >
                                     { exercise.sets.length }x {exercise.exercise?.name}
                                 </Text>
@@ -137,7 +124,10 @@ export default function Index() {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={{
+            ...styles.container,
+            flex: 1,
+        }}>
             <FlatList
                 data={logs}
                 renderItem={({item}) => (
