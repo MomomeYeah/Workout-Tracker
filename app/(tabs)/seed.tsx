@@ -4,7 +4,7 @@ import * as seedData from "@/db/seed-data";
 import { eq } from "drizzle-orm";
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
-import { Button, Text, View } from "react-native";
+import { Button, View } from "react-native";
 
 export default function SeedScreen() {
     const logDB = drizzle(useSQLiteContext(), { schema });
@@ -73,8 +73,7 @@ export default function SeedScreen() {
 
     return (
         <View style={{...styles.container, ...styles.centredFlex}}>
-            <Text style={styles.text}>Seed screen</Text>
-            <Button title="Go" onPress={handleSeed} />
+            <Button title="Seed Application Data" onPress={handleSeed} />
         </View>
     );
 }

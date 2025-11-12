@@ -3,10 +3,10 @@ import * as schema from "@/db/schema";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { eq } from "drizzle-orm";
 import { drizzle } from 'drizzle-orm/expo-sqlite';
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Button, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 function Exercise(exercise: schema.LogExercisesTableSelectType) {
     return (
@@ -85,6 +85,17 @@ export default function Workout() {
             }
         })();
     }, []);
+
+    const router = useRouter();
+    async function handleOnDelete() {
+        await logDB
+            .delete(schema.LogsTable)
+            .where(eq(schema.LogsTable.id, +id));
+
+        router.navigate({
+            pathname: "/(tabs)/logs",
+        });
+    }
 
     return (
         <ScrollView
@@ -234,6 +245,7 @@ export default function Workout() {
                     }
                 </View>
             </View>
+            <Button title="Delete" onPress={handleOnDelete} />
         </ScrollView>
     );
 }

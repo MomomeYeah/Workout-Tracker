@@ -22,7 +22,8 @@ export default function RootLayout() {
                     title: "Logs",
                     tabBarIcon: ({ color, focused }) => (
                         <Ionicons name={focused ? 'barbell' : 'barbell-outline'} color={color} size={24} />
-                    )
+                    ),
+                    popToTopOnBlur: true,
                 }}
             />
             <Tabs.Screen
@@ -31,7 +32,7 @@ export default function RootLayout() {
                     title: "Exercises",
                     tabBarIcon: ({ color, focused }) => (
                         <Ionicons name={focused ? 'bicycle' : 'bicycle-outline'} color={color} size={24} />
-                    )
+                    ),
                 }}
             />
             <Tabs.Screen
@@ -40,7 +41,7 @@ export default function RootLayout() {
                     title: "Seed",
                     tabBarIcon: ({ color, focused }) => (
                         <Ionicons name={focused ? 'leaf' : 'leaf-outline'} color={color} size={24} />
-                    )
+                    ),
                 }}
             />
         </Tabs>
