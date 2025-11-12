@@ -19,6 +19,11 @@ export const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 10,
     },
+    title: {
+        color: foregroundColor,
+        fontSize: 22,
+        fontWeight: "bold",
+    },
     text: {
         color: foregroundColor,
     },

@@ -1,10 +1,10 @@
-import { styles } from "@/constants/theme";
+import { foregroundColor, styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { eq, sql } from "drizzle-orm";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Button, FlatList, GestureResponderEvent, Modal, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -42,6 +42,7 @@ type AddExerciseModalProps = {
 }
 function AddExerciseModal(props: AddExerciseModalProps) {
     const [name, setName] = useState("");
+    const nameRef = useRef<TextInput>(null);
 
     return (
         <Modal
@@ -51,16 +52,27 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                 props.setVisible(false);
                 setName("");
             }}
+            transparent={true}
+            // keyboard, mysteriously, will not open without a short timeout here
+            onShow={() => setTimeout(() => nameRef.current?.focus(), 100)}
         >
             <View
                 style={{
                     ...styles.container,
                     flex: 1,
+                    padding: 30,
                 }}
             >
+                <Text style={{...styles.title, marginBottom: 20}}>Add Exercise</Text>
                 <TextInput
-                    style={{...styles.input}}
+                    ref={nameRef}
+                    style={{
+                        ...styles.input,
+                        marginBottom: 10,
+                    }}
                     value={name}
+                    placeholder="Exercise name"
+                    placeholderTextColor={foregroundColor}
                     onChangeText={(text) => setName(text)}
                 />
                 <Button title="Save" onPress={() => {
@@ -89,7 +101,7 @@ function ExercisesHeader(props: ExercisesHeaderProps) {
                 marginBottom: 20,
             }}
         >
-            <Text style={{...styles.text, fontSize: 22, fontWeight: "bold"}}>Exercises</Text>
+            <Text style={{...styles.title}}>Exercises</Text>
             <Ionicons
                 name="add-outline"
                 size={32}
