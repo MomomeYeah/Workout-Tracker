@@ -1,10 +1,11 @@
 import * as schema from "@/db/schema";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { eq } from "drizzle-orm";
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 const styles = StyleSheet.create({
     container: {
@@ -67,8 +68,14 @@ export default function Workout() {
     const logDB = drizzle(useSQLiteContext(), { schema });
 
     const [title, setTitle] = useState("");
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
+
+    const [startTime, setStartTime] = useState<Date>(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+    
+    const [endTime, setEndTime] = useState<Date | undefined>(undefined);
+    const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+    
     const [notes, setNotes] = useState("");
     const [exercises, setExercises] = useState<Array<schema.LogExercisesTableSelectType>>([]);
 
@@ -89,11 +96,11 @@ export default function Workout() {
 
             if (log) {
                 setTitle(log.title);
-                setStartTime(log.startTime.toString());
+                setStartTime(new Date(log.startTime));
                 setExercises(log.exercises);
 
                 if (log.endTime) {
-                    setEndTime(log.endTime.toString());
+                    setEndTime(new Date(log.endTime));
                 }
             }
         })();
@@ -132,22 +139,90 @@ export default function Workout() {
                         borderColor: "green",
                     }}
                 >
-                    <TextInput
+                    <Pressable
                         style={{
-                            ...styles.input,
                             flexGrow: 1,
+                            borderWidth: 1,
+                            borderColor: "pink",
                         }}
-                        value={startTime}
-                        onChangeText={setStartTime}
-                    />
-                    <TextInput
+                        onPress={() => setShowDatePicker(true)}
+                    >
+                        <TextInput
+                            style={{...styles.text}}
+                            editable={false}
+                        >
+                            {startTime.toLocaleDateString()}
+                        </TextInput>
+                    </Pressable>
+                    {
+                        showDatePicker &&
+                        <DateTimePicker
+                            value={new Date(startTime)}
+                            mode="date"
+                            onChange={(event, selectDate) => {
+                                setShowDatePicker(false);
+                                if (selectDate) {
+                                    setStartTime(selectDate)
+                                }
+                            }}
+                        />
+                    }
+                    <Pressable
                         style={{
-                            ...styles.input,
                             flexGrow: 1,
+                            borderWidth: 1,
+                            borderColor: "pink",
                         }}
-                        value={endTime}
-                        onChangeText={setEndTime}
-                    />
+                        onPress={() => setShowStartTimePicker(true)}
+                    >
+                        <TextInput
+                            style={{...styles.text}}
+                            editable={false}
+                        >
+                            {startTime.toLocaleTimeString()}
+                        </TextInput>
+                    </Pressable>
+                    {
+                        showStartTimePicker &&
+                        <DateTimePicker
+                            value={new Date(startTime)}
+                            mode="time"
+                            onChange={(event, selectDate) => {
+                                setShowStartTimePicker(false);
+                                if (selectDate) {
+                                    setStartTime(selectDate)
+                                }
+                            }}
+                        />
+                    }
+                    <Pressable
+                        style={{
+                            flexGrow: 1,
+                            borderWidth: 1,
+                            borderColor: "pink",
+                        }}
+                        onPress={() => setShowEndTimePicker(true)}
+                    >
+                        <TextInput
+                            style={{...styles.text}}
+                            editable={false}
+                        >
+                            {endTime?.toLocaleTimeString()}
+                        </TextInput>
+                    </Pressable>
+                    {
+                        showEndTimePicker &&
+                        <DateTimePicker
+                            value={endTime ? new Date(endTime) : new Date()}
+                            mode="time"
+                            onChange={(event, selectDate) => {
+                                setShowEndTimePicker(false);
+                                if (selectDate) {
+                                    setEndTime(selectDate)
+                                }
+                            }}
+                        />
+                    }
                 </View>
                 <TextInput
                     style={{
