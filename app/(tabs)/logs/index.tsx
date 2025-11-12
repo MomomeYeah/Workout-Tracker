@@ -1,10 +1,9 @@
+import AddItemButton from "@/components/add-item-button";
 import * as schema from "@/db/schema";
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useRouter } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from 'react';
 import {
     FlatList,
     Pressable,
@@ -105,12 +104,9 @@ function Workout(item: schema.LogsTableSelectType) {
 
 export default function Index() {
     const logDB = drizzle(useSQLiteContext(), { schema });
-    const [logs, setLogs] = useState<Array<schema.LogsTableSelectType>>([]);
-    const router = useRouter();
-
-    console.log(useSQLiteContext());
     useDrizzleStudio(useSQLiteContext());
 
+    const router = useRouter();
     async function handleCreateWorkout() {
         const newLog = await logDB
             .insert(schema.LogsTable)
@@ -127,22 +123,18 @@ export default function Index() {
         });
     }
 
-    useEffect(() => {
-        (async () => {
-            const logs = await logDB
-                .query.LogsTable.findMany({
+    const { data: logs, error, updatedAt } = useLiveQuery(
+        logDB.query.LogsTable.findMany({
+            with: {
+                exercises: {
                     with: {
-                        exercises: {
-                            with: {
-                                exercise: true,
-                                sets: true,
-                            }
-                        }
+                        exercise: true,
+                        sets: true,
                     }
-                });
-            setLogs(logs);
-        })();
-    }, []);
+                }
+            }
+        })
+    );
 
     return (
         <View style={styles.container}>
@@ -151,24 +143,9 @@ export default function Index() {
                 renderItem={({item}) => (
                     <Workout {...item} />
                 )}
+                keyExtractor={log => log.id.toString()}
             />
-            <Pressable
-                style={{
-                    position: "absolute",
-                    bottom: 20,
-                    right: 20,
-                    height: 50,
-                    width: 50,
-                    backgroundColor: "#fff",
-                    flex: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: 10,
-                }}
-                onPress={handleCreateWorkout}
-            >
-                <Ionicons name="add-outline" size={32} />
-            </Pressable>
+            <AddItemButton onPress={handleCreateWorkout} />
         </View>
     );
 }

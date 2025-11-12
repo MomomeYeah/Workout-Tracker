@@ -26,11 +26,11 @@ export default function RootLayout() {
                 }}
             />
             <Tabs.Screen
-                name="about"
+                name="exercises"
                 options={{
-                    title: "About",
+                    title: "Exercises",
                     tabBarIcon: ({ color, focused }) => (
-                        <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24} />
+                        <Ionicons name={focused ? 'bicycle' : 'bicycle-outline'} color={color} size={24} />
                     )
                 }}
             />

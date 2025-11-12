@@ -10,6 +10,7 @@ export default function RootLayout() {
     return (
         <SQLiteProvider
             databaseName={databaseName}
+            options={{ enableChangeListener: true }}
             onInit={async (database) => {
                 try {
                     const db = drizzle(database);
