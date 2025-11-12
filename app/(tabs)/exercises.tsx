@@ -2,14 +2,19 @@ import AddItemButton from "@/components/add-item-button";
 import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { drizzle } from "drizzle-orm/expo-sqlite";
+import { eq, sql } from "drizzle-orm";
+import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
-import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Button, FlatList, Modal, Text, TextInput, View } from "react-native";
 
 function Exercise(exercise: schema.ExercisesTableSelectType) {
-    function handleOpenMenu() {
-        alert ("handleOpenMenu");
+    const logDB = drizzle(useSQLiteContext(), { schema });
+
+    async function handleDeleteExercise() {
+        await logDB
+            .delete(schema.ExercisesTable)
+            .where(eq(schema.ExercisesTable.id, exercise.id))
     }
 
     return (
@@ -25,27 +30,70 @@ function Exercise(exercise: schema.ExercisesTableSelectType) {
             <Text style={styles.text}>
                 {exercise.name}
             </Text>
-            <Ionicons style={styles.text} name="ellipsis-vertical-sharp" size={24} onPress={handleOpenMenu} />
+            <Ionicons style={styles.text} name="trash-sharp" size={24} onPress={handleDeleteExercise} />
         </View>
     );
 }
 
+type AddExerciseModalProps = {
+    visible: boolean,
+    setVisible: Dispatch<SetStateAction<boolean>>
+    handleCreateExercise: (name: string) => Promise<void>,
+}
+function AddExerciseModal(props: AddExerciseModalProps) {
+    const [name, setName] = useState("");
+
+    return (
+        <Modal
+            animationType="slide"
+            visible={props.visible}
+            onRequestClose={() => {
+                props.setVisible(false);
+                setName("");
+            }}
+        >
+            <View
+                style={{
+                    ...styles.container,
+                    flex: 1,
+                }}
+            >
+                <TextInput style={{...styles.input}} value={name} onChangeText={(text) => setName(text)} />
+                <Button title="Save" onPress={() => {
+                    if (name) {
+                        props.handleCreateExercise(name);
+                        setName("");
+                    }
+                }} />
+            </View>
+        </Modal>
+    )
+}
+
 export default function ExercisesScreen() {
     const logDB = drizzle(useSQLiteContext(), { schema });
-    const [exercises, setExercises] = useState<Array<schema.ExercisesTableSelectType>>([]);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    function handleCreateExercise() {
-        alert ("handleCreateExercise");
+    function handleOpenCreateExercise() {
+        setModalVisible(true);
     }
-    
-    useEffect(() => {
-        (async () => {
-            const exercises = await logDB
-                .select()
-                .from(schema.ExercisesTable);
-            setExercises(exercises);
-        })();
-    }, []);
+
+    async function handleCreateExercise(name: string) {
+        await logDB
+            .insert(schema.ExercisesTable)
+            .values({
+                name: name
+            });
+
+        setModalVisible(false);
+    }
+
+    const { data: exercises, error, updatedAt } = useLiveQuery(
+        logDB
+            .select()
+            .from(schema.ExercisesTable)
+            .orderBy(sql`lower(${schema.ExercisesTable.name})`)
+    );
 
     return (
         <View
@@ -55,12 +103,15 @@ export default function ExercisesScreen() {
                 padding: 5,
             }}
         >
-            {
-                exercises.map((exercise) => (
-                    <Exercise key={exercise.id} {...exercise} />
-                ))
-            }
-            <AddItemButton onPress={handleCreateExercise} />
+            <FlatList
+                data={exercises}
+                renderItem={({item}) => (
+                    <Exercise {...item} />
+                )}
+                keyExtractor={exercise => exercise.id.toString()}
+            />
+            <AddItemButton onPress={handleOpenCreateExercise} />
+            <AddExerciseModal visible={modalVisible} setVisible={setModalVisible} handleCreateExercise={handleCreateExercise} />
         </View>
     );
 }
