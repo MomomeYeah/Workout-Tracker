@@ -9,6 +9,7 @@ export default function RootLayout() {
                 headerStyle: {
                     backgroundColor: "#25292e",
                 },
+                headerShown: false,
                 headerShadowVisible: false,
                 headerTintColor: "#fff",
                 tabBarStyle: {

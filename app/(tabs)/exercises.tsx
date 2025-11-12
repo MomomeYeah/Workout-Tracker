@@ -1,4 +1,3 @@
-import AddItemButton from "@/components/add-item-button";
 import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -6,7 +5,8 @@ import { eq, sql } from "drizzle-orm";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import { Dispatch, SetStateAction, useState } from "react";
-import { Button, FlatList, Modal, Text, TextInput, View } from "react-native";
+import { Button, FlatList, GestureResponderEvent, Modal, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function Exercise(exercise: schema.ExercisesTableSelectType) {
     const logDB = drizzle(useSQLiteContext(), { schema });
@@ -58,7 +58,11 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                     flex: 1,
                 }}
             >
-                <TextInput style={{...styles.input}} value={name} onChangeText={(text) => setName(text)} />
+                <TextInput
+                    style={{...styles.input}}
+                    value={name}
+                    onChangeText={(text) => setName(text)}
+                />
                 <Button title="Save" onPress={() => {
                     if (name) {
                         props.handleCreateExercise(name);
@@ -68,6 +72,32 @@ function AddExerciseModal(props: AddExerciseModalProps) {
             </View>
         </Modal>
     )
+}
+
+export type ExercisesHeaderProps = {
+    onPress: (event: GestureResponderEvent) => void,
+}
+function ExercisesHeader(props: ExercisesHeaderProps) {
+    return (
+        <View
+            style={{
+                ...styles.container,
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 20,
+            }}
+        >
+            <Text style={{...styles.text, fontSize: 22, fontWeight: "bold"}}>Exercises</Text>
+            <Ionicons
+                name="add-outline"
+                size={32}
+                style={{...styles.text}}
+                onPress={props.onPress}
+            />
+        </View>
+    );
 }
 
 export default function ExercisesScreen() {
@@ -96,12 +126,12 @@ export default function ExercisesScreen() {
     );
 
     return (
-        <View
+        <SafeAreaView
             style={{
-                ...styles.container,
-                flex: 1,
-                padding: 5,
-            }}
+                    ...styles.container,
+                    flex: 1,
+                    padding: 10,
+                }}
         >
             <FlatList
                 data={exercises}
@@ -109,9 +139,12 @@ export default function ExercisesScreen() {
                     <Exercise {...item} />
                 )}
                 keyExtractor={exercise => exercise.id.toString()}
+                ListHeaderComponent={() => (
+                    <ExercisesHeader onPress={handleOpenCreateExercise} />
+                )}
+                stickyHeaderIndices={[0]}
             />
-            <AddItemButton onPress={handleOpenCreateExercise} />
             <AddExerciseModal visible={modalVisible} setVisible={setModalVisible} handleCreateExercise={handleCreateExercise} />
-        </View>
+        </SafeAreaView>
     );
 }

@@ -11,6 +11,7 @@ import {
     Text,
     View
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function Workout(item: schema.LogsTableSelectType) {
     const router = useRouter();
@@ -124,7 +125,7 @@ export default function Index() {
     );
 
     return (
-        <View style={{
+        <SafeAreaView style={{
             ...styles.container,
             flex: 1,
         }}>
@@ -136,6 +137,6 @@ export default function Index() {
                 keyExtractor={log => log.id.toString()}
             />
             <AddItemButton onPress={handleCreateWorkout} />
-        </View>
+        </SafeAreaView>
     );
 }
