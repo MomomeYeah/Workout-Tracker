@@ -77,6 +77,7 @@ export default function Workout() {
             if (log) {
                 setTitle(log.title);
                 setStartTime(new Date(log.startTime));
+                setNotes(log.notes ?? "");
                 setExercises(log.exercises);
 
                 if (log.endTime) {
@@ -85,6 +86,24 @@ export default function Workout() {
             }
         })();
     }, []);
+
+    type UpdateProps = {
+        newTitle?: string,
+        newStartTime?: Date,
+        newEndTime?: Date,
+        newNotes?: string
+    }
+    async function handleOnUpdate(updateProps: UpdateProps) {
+        await logDB
+            .update(schema.LogsTable)
+            .set({
+                title: updateProps.newTitle ?? title,
+                startTime: (updateProps.newStartTime ?? startTime).getTime(),
+                endTime: (updateProps.newEndTime ?? endTime)?.getTime(),
+                notes: updateProps.newNotes ?? notes,
+            })
+            .where(eq(schema.LogsTable.id, +id));
+    }
 
     const router = useRouter();
     async function handleOnDelete() {
@@ -119,7 +138,10 @@ export default function Workout() {
                         borderColor: "red",
                     }}
                     value={title}
-                    onChangeText={setTitle}
+                    onChangeText={(text) => {
+                        setTitle(text);
+                        handleOnUpdate({newTitle: text});
+                    }}
                 />
                 <View
                     style={{
@@ -153,7 +175,19 @@ export default function Workout() {
                             onChange={(event, selectDate) => {
                                 setShowDatePicker(false);
                                 if (selectDate) {
-                                    setStartTime(selectDate)
+                                    setStartTime(selectDate);
+
+                                    const newEndTime = endTime;
+                                    if (newEndTime) {
+                                        newEndTime.setFullYear(selectDate.getFullYear());
+                                        newEndTime.setMonth(selectDate.getMonth());
+                                        newEndTime.setDate(selectDate.getDate());
+                                    }
+
+                                    handleOnUpdate({
+                                        newStartTime: selectDate,
+                                        newEndTime: newEndTime,
+                                    });
                                 }
                             }}
                         />
@@ -181,7 +215,8 @@ export default function Workout() {
                             onChange={(event, selectDate) => {
                                 setShowStartTimePicker(false);
                                 if (selectDate) {
-                                    setStartTime(selectDate)
+                                    setStartTime(selectDate);
+                                    handleOnUpdate({newStartTime: selectDate});
                                 }
                             }}
                         />
@@ -209,7 +244,8 @@ export default function Workout() {
                             onChange={(event, selectDate) => {
                                 setShowEndTimePicker(false);
                                 if (selectDate) {
-                                    setEndTime(selectDate)
+                                    setEndTime(selectDate);
+                                    handleOnUpdate({newEndTime: selectDate});
                                 }
                             }}
                         />
@@ -225,7 +261,10 @@ export default function Workout() {
                     multiline
                     placeholder="Notes"
                     placeholderTextColor="#fff"
-                    onChangeText={setNotes}
+                    onChangeText={(text) => {
+                        setNotes(text);
+                        handleOnUpdate({newNotes: text});
+                    }}
                 />
                 <View
                     style={{

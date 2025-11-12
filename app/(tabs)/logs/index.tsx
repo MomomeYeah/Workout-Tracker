@@ -17,7 +17,7 @@ function Workout(item: schema.LogsTableSelectType) {
 
     const startTime = new Date(item.startTime);
     const endTime = item.endTime ? new Date(item.endTime) : null;
-    const durationMins = item.endTime ? (item.endTime - item.startTime) / 1000 / 60 : null;
+    const durationMins = item.endTime ? Math.floor((item.endTime - item.startTime) / 1000 / 60) : null;
     const duration = durationMins ? `${durationMins} mins` : "";
 
     const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
