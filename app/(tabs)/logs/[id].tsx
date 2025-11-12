@@ -8,6 +8,83 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from "react";
 import { Button, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
+function Set(set: schema.LogExerciseSetsTableSelectType) {
+    const [weight, setWeight] = useState(set.weight?.toString());
+    const [reps, setReps] = useState(set.reps?.toString());
+    const [notes, setNotes] = useState(set.notes);
+
+    const logDB = drizzle(useSQLiteContext(), { schema });
+    type UpdateProps = {
+        newWeight?: string,
+        newReps?: string,
+        newNotes?: string
+    }
+    async function handleOnUpdate(props: UpdateProps) {
+        await logDB
+            .update(schema.LogExerciseSetsTable)
+            .set({
+                weight: Number(props.newWeight ?? weight),
+                reps: Number(props.newReps ?? reps),
+                notes: props.newNotes ?? notes,
+            })
+            .where(eq(schema.LogExerciseSetsTable.id, set.id))
+    }
+
+    return (
+        <View
+            key={set.id}
+            style={{
+                flex: 1,
+                flexDirection: "row",
+            }}
+        >
+            <TextInput
+                style={{
+                    ...styles.input,
+                    flexGrow: 1,
+                    flexBasis: 0,
+                    borderWidth: 2,
+                    borderColor: "red",
+                }}
+                value={weight}
+                onChangeText={(weight) => {
+                    setWeight(weight);
+                    handleOnUpdate({newWeight: weight});
+                }}
+            />
+            <TextInput
+                style={{
+                    ...styles.input,
+                    flexGrow: 1,
+                    flexBasis: 0,
+                    borderWidth: 2,
+                    borderColor: "red",
+                }}
+                value={reps}
+                onChangeText={(reps) => {
+                    setReps(reps);
+                    handleOnUpdate({newReps: reps});
+                }}
+            />
+            <TextInput
+                style={{
+                    ...styles.input,
+                    flexGrow: 1,
+                    flexBasis: 0,
+                    borderWidth: 2,
+                    borderColor: "red",
+                }}
+                value={notes ?? ""}
+                multiline
+                onChangeText={(notes) => {
+                    setNotes(notes);
+                    handleOnUpdate({newNotes: notes});
+                }}
+            />
+        </View>
+    );
+}
+
 function Exercise(exercise: schema.LogExercisesTableSelectType) {
     return (
         <View
@@ -20,23 +97,7 @@ function Exercise(exercise: schema.LogExercisesTableSelectType) {
             </Text>
             {
                 exercise.sets.map((set) => (
-                    <View
-                        key={set.id}
-                        style={{
-                            flex: 1,
-                            flexDirection: "row",
-                        }}
-                    >
-                        <Text style={{...styles.text, flexGrow: 1}}>
-                            {set.weight}
-                        </Text>
-                        <Text style={{...styles.text, flexGrow: 1}}>
-                            {set.reps}
-                        </Text>
-                        <Text style={{...styles.text, flexGrow: 1}}>
-                            {set.notes}
-                        </Text>
-                    </View>
+                    <Set key={set.id} {...set} />
                 ))
             }
         </View>
