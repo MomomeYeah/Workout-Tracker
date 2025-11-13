@@ -45,8 +45,7 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
                     ...styles.input,
                     flexGrow: 1,
                     flexBasis: 0,
-                    borderWidth: 2,
-                    borderColor: "red",
+                    margin: 1,
                 }}
                 value={weight}
                 onChangeText={(weight) => {
@@ -59,8 +58,7 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
                     ...styles.input,
                     flexGrow: 1,
                     flexBasis: 0,
-                    borderWidth: 2,
-                    borderColor: "red",
+                    margin: 1,
                 }}
                 value={reps}
                 onChangeText={(reps) => {
@@ -73,8 +71,7 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
                     ...styles.input,
                     flexGrow: 1,
                     flexBasis: 0,
-                    borderWidth: 2,
-                    borderColor: "red",
+                    margin: 1,
                 }}
                 value={notes ?? ""}
                 multiline
@@ -90,11 +87,9 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
 function Exercise(exercise: schema.LogExercisesTableSelectType) {
     return (
         <View
-            style={{
-                ...styles.card
-            }}
+            style={{...styles.card}}
         >
-            <Text style={{...styles.text}}>
+            <Text style={{...styles.title, marginBottom: 10}}>
                 {exercise.exercise.name}
             </Text>
             {
@@ -232,153 +227,137 @@ export default function Workout() {
                         flexDirection: "column",
                     }}
                 >
-                    <TextInput
-                        style={{
-                            ...styles.input,
-                            flexGrow: 1,
-                            borderWidth: 2,
-                            borderColor: "red",
-                        }}
-                        value={title}
-                        onChangeText={(text) => {
-                            setTitle(text);
-                            handleOnUpdate({newTitle: text});
-                        }}
-                    />
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: "row",
-                            flexGrow: 1,
-                            borderWidth: 2,
-                            borderColor: "green",
-                        }}
-                    >
-                        <Pressable
+                    <View style={{marginBottom: 10}}>
+                        <TextInput
                             style={{
-                                flexGrow: 1,
-                                borderWidth: 1,
-                                borderColor: "pink",
+                                ...styles.input,
                             }}
-                            onPress={() => setShowDatePicker(true)}
+                            value={title}
+                            onChangeText={(text) => {
+                                setTitle(text);
+                                handleOnUpdate({newTitle: text});
+                            }}
+                        />
+                        <View
+                            style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                flexGrow: 1,
+                            }}
                         >
-                            <TextInput
-                                style={{...styles.text}}
-                                editable={false}
+                            <Pressable
+                                style={{
+                                    ...styles.pressableInput,
+                                    flexGrow: 1,
+                                }}
+                                onPress={() => setShowDatePicker(true)}
                             >
-                                {startTime.toLocaleDateString()}
-                            </TextInput>
-                        </Pressable>
-                        {
-                            showDatePicker &&
-                            <DateTimePicker
-                                value={new Date(startTime)}
-                                mode="date"
-                                onChange={(event, selectDate) => {
-                                    setShowDatePicker(false);
-                                    if (selectDate) {
-                                        setStartTime(selectDate);
+                                <TextInput
+                                    style={{...styles.text}}
+                                    editable={false}
+                                >
+                                    {startTime.toLocaleDateString()}
+                                </TextInput>
+                            </Pressable>
+                            {
+                                showDatePicker &&
+                                <DateTimePicker
+                                    value={new Date(startTime)}
+                                    mode="date"
+                                    onChange={(event, selectDate) => {
+                                        setShowDatePicker(false);
+                                        if (selectDate) {
+                                            setStartTime(selectDate);
 
-                                        const newEndTime = endTime;
-                                        if (newEndTime) {
-                                            newEndTime.setFullYear(selectDate.getFullYear());
-                                            newEndTime.setMonth(selectDate.getMonth());
-                                            newEndTime.setDate(selectDate.getDate());
+                                            const newEndTime = endTime;
+                                            if (newEndTime) {
+                                                newEndTime.setFullYear(selectDate.getFullYear());
+                                                newEndTime.setMonth(selectDate.getMonth());
+                                                newEndTime.setDate(selectDate.getDate());
+                                            }
+
+                                            handleOnUpdate({
+                                                newStartTime: selectDate,
+                                                newEndTime: newEndTime,
+                                            });
                                         }
-
-                                        handleOnUpdate({
-                                            newStartTime: selectDate,
-                                            newEndTime: newEndTime,
-                                        });
-                                    }
+                                    }}
+                                />
+                            }
+                            <Pressable
+                                style={{
+                                    ...styles.pressableInput,
+                                    flexGrow: 1,
                                 }}
-                            />
-                        }
-                        <Pressable
-                            style={{
-                                flexGrow: 1,
-                                borderWidth: 1,
-                                borderColor: "pink",
-                            }}
-                            onPress={() => setShowStartTimePicker(true)}
-                        >
-                            <TextInput
-                                style={{...styles.text}}
-                                editable={false}
+                                onPress={() => setShowStartTimePicker(true)}
                             >
-                                {startTime.toLocaleTimeString()}
-                            </TextInput>
-                        </Pressable>
-                        {
-                            showStartTimePicker &&
-                            <DateTimePicker
-                                value={new Date(startTime)}
-                                mode="time"
-                                onChange={(event, selectDate) => {
-                                    setShowStartTimePicker(false);
-                                    if (selectDate) {
-                                        setStartTime(selectDate);
-                                        handleOnUpdate({newStartTime: selectDate});
-                                    }
+                                <TextInput
+                                    style={{...styles.text}}
+                                    editable={false}
+                                >
+                                    {startTime.toLocaleTimeString()}
+                                </TextInput>
+                            </Pressable>
+                            {
+                                showStartTimePicker &&
+                                <DateTimePicker
+                                    value={new Date(startTime)}
+                                    mode="time"
+                                    onChange={(event, selectDate) => {
+                                        setShowStartTimePicker(false);
+                                        if (selectDate) {
+                                            setStartTime(selectDate);
+                                            handleOnUpdate({newStartTime: selectDate});
+                                        }
+                                    }}
+                                />
+                            }
+                            <Pressable
+                                style={{
+                                    ...styles.pressableInput,
+                                    flexGrow: 1,
                                 }}
-                            />
-                        }
-                        <Pressable
-                            style={{
-                                flexGrow: 1,
-                                borderWidth: 1,
-                                borderColor: "pink",
-                            }}
-                            onPress={() => setShowEndTimePicker(true)}
-                        >
-                            <TextInput
-                                style={{...styles.text}}
-                                editable={false}
+                                onPress={() => setShowEndTimePicker(true)}
                             >
-                                {endTime?.toLocaleTimeString()}
-                            </TextInput>
-                        </Pressable>
-                        {
-                            showEndTimePicker &&
-                            <DateTimePicker
-                                value={endTime ? new Date(endTime) : new Date()}
-                                mode="time"
-                                onChange={(event, selectDate) => {
-                                    setShowEndTimePicker(false);
-                                    if (selectDate) {
-                                        setEndTime(selectDate);
-                                        handleOnUpdate({newEndTime: selectDate});
-                                    }
-                                }}
-                            />
-                        }
+                                <TextInput
+                                    style={{...styles.text}}
+                                    editable={false}
+                                >
+                                    {endTime?.toLocaleTimeString()}
+                                </TextInput>
+                            </Pressable>
+                            {
+                                showEndTimePicker &&
+                                <DateTimePicker
+                                    value={endTime ? new Date(endTime) : new Date()}
+                                    mode="time"
+                                    onChange={(event, selectDate) => {
+                                        setShowEndTimePicker(false);
+                                        if (selectDate) {
+                                            setEndTime(selectDate);
+                                            handleOnUpdate({newEndTime: selectDate});
+                                        }
+                                    }}
+                                />
+                            }
+                        </View>
+                        <TextInput
+                            style={{
+                                ...styles.input,
+                                flexGrow: 1,
+                                verticalAlign: "top"
+                            }}
+                            value={notes}
+                            multiline
+                            placeholder="Notes"
+                            placeholderTextColor="#fff"
+                            onChangeText={(text) => {
+                                setNotes(text);
+                                handleOnUpdate({newNotes: text});
+                            }}
+                        />
                     </View>
-                    <TextInput
-                        style={{
-                            ...styles.input,
-                            flexGrow: 1,
-                            verticalAlign: "top"
-                        }}
-                        value={notes}
-                        multiline
-                        placeholder="Notes"
-                        placeholderTextColor="#fff"
-                        onChangeText={(text) => {
-                            setNotes(text);
-                            handleOnUpdate({newNotes: text});
-                        }}
-                    />
-                    <View
-                        style={{
-                            flexGrow: 3,
-                        }}
-                    >
-                        <Text style={{
-                            ...styles.text,
-                            fontSize: 24,
-                        }}>
-                            Exercises
-                        </Text>
+                    <View>
                         {
                             exercises.map((exercise, index) => (
                                 <Exercise key={index} {...exercise} />

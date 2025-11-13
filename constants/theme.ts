@@ -31,6 +31,16 @@ export const styles = StyleSheet.create({
         color: foregroundColor,
         borderWidth: 1,
         borderColor: foregroundColor,
-        padding: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
+        paddingLeft: 15,
+        paddingRight: 15,
     },
+    pressableInput: {
+        color: foregroundColor,
+        borderWidth: 1,
+        borderColor: foregroundColor,
+        padding: 5,
+        paddingLeft: 10,
+    }
 });
