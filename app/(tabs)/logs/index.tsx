@@ -1,5 +1,9 @@
 import AddItemButton from "@/components/add-item-button";
-import { backgroundColor, styles } from "@/constants/theme";
+import ThemedCard from "@/components/themed-card";
+import ThemedInvisibleIcon from "@/components/themed-invisible-icon";
+import ThemedText from "@/components/themed-text";
+import ThemedView from "@/components/themed-view";
+import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
@@ -9,7 +13,6 @@ import { useSQLiteContext } from 'expo-sqlite';
 import {
     FlatList,
     Pressable,
-    Text,
     View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -35,67 +38,63 @@ function Workout(item: schema.LogsTableSelectType) {
     }
 
     return (
-        <Pressable
-            style={{
-                ...styles.card,
-                paddingLeft: 0,
-                flex: 1,
-                flexDirection: "row",
-            }}
-            onPress={gotoWorkout}
-        >
-            <View
+        <Pressable onPress={gotoWorkout}>
+            <ThemedCard
                 style={{
+                    paddingLeft: 0,
                     flex: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}
-            >
-                <Text style={styles.text}>{daysOfWeek[startTime.getDay()]}</Text>
-                <Text style={styles.text}>{startTime.getDate().toString().padStart(2, "0")}</Text>
-                <Text style={styles.text}>{months[startTime.getMonth() - 1]}</Text>
-            </View>
-            <View
-                style={{
-                    flex: 1,
-                    flexDirection: "column",
-                    flexGrow: 5,
+                    flexDirection: "row",
                 }}
             >
                 <View
                     style={{
                         flex: 1,
-                        flexDirection: "row",
-                        justifyContent: "space-between"
+                        alignItems: "center",
+                        justifyContent: "center",
                     }}
                 >
-                    <Text style={styles.text}>{item.title}</Text>
-                    <Text style={styles.text}>{duration}</Text>
+                    <ThemedText>{daysOfWeek[startTime.getDay()]}</ThemedText>
+                    <ThemedText>{startTime.getDate().toString().padStart(2, "0")}</ThemedText>
+                    <ThemedText>{months[startTime.getMonth() - 1]}</ThemedText>
                 </View>
-                <View>
-                    {
-                        item.exercises.map((exercise, index) => {
-                            return (
-                                <Text
-                                    key={index}
-                                    style={styles.text}
-                                >
-                                    { exercise.sets.length }x {exercise.exercise?.name}
-                                </Text>
-                            )
-                        })
-                    }
+                <View
+                    style={{
+                        flex: 1,
+                        flexDirection: "column",
+                        flexGrow: 5,
+                    }}
+                >
+                    <View
+                        style={{
+                            flex: 1,
+                            flexDirection: "row",
+                            justifyContent: "space-between"
+                        }}
+                    >
+                        <ThemedText>{item.title}</ThemedText>
+                        <ThemedText>{duration}</ThemedText>
+                    </View>
+                    <View>
+                        {
+                            item.exercises.map((exercise, index) => {
+                                return (
+                                    <ThemedText key={index}>
+                                        { exercise.sets.length }x {exercise.exercise?.name}
+                                    </ThemedText>
+                                )
+                            })
+                        }
+                    </View>
                 </View>
-            </View>
+            </ThemedCard>
         </Pressable>
     );
 }
 
 function LogsHeader() {
     return (
-        <View
+        <ThemedView
             style={{
-                ...styles.container,
                 flex: 1,
                 flexDirection: "row",
                 alignItems: "center",
@@ -103,18 +102,12 @@ function LogsHeader() {
                 marginBottom: 20,
             }}
         >
-            <Ionicons
-                name="ellipsis-vertical-sharp"
-                size={32}
-                style={{color: backgroundColor}}
-            />
-            <Text style={{...styles.title}}>Workout Logs</Text>
-            <Ionicons
-                name="ellipsis-vertical-sharp"
-                size={32}
-                style={{...styles.text}}
-            />
-        </View>
+            <ThemedInvisibleIcon />
+            <ThemedText style={{...styles.title}}>Workout Logs</ThemedText>
+            <ThemedText>
+                <Ionicons name="ellipsis-vertical-sharp" size={32} />
+            </ThemedText>
+        </ThemedView>
     );
 }
 
@@ -154,7 +147,6 @@ export default function Index() {
 
     return (
         <SafeAreaView style={{
-            ...styles.container,
             flex: 1,
             padding: 10,
         }}>

@@ -1,11 +1,16 @@
-import { backgroundColor, foregroundColor, styles } from "@/constants/theme";
+import ThemedCard from "@/components/themed-card";
+import ThemedInvisibleIcon from "@/components/themed-invisible-icon";
+import ThemedText from "@/components/themed-text";
+import ThemedTextInput from "@/components/themed-text-input";
+import ThemedView from "@/components/themed-view";
+import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { eq, sql } from "drizzle-orm";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
-import { Button, FlatList, GestureResponderEvent, Modal, Text, TextInput, View } from "react-native";
+import { Button, FlatList, GestureResponderEvent, Modal, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function Exercise(exercise: schema.ExercisesTableSelectType) {
@@ -18,20 +23,21 @@ function Exercise(exercise: schema.ExercisesTableSelectType) {
     }
 
     return (
-        <View
+        <ThemedCard
             style={{
-                ...styles.card,
                 flex: 1,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
             }}
         >
-            <Text style={styles.text}>
+            <ThemedText>
                 {exercise.name}
-            </Text>
-            <Ionicons style={styles.text} name="trash-sharp" size={24} onPress={handleDeleteExercise} />
-        </View>
+            </ThemedText>
+            <ThemedText>
+                <Ionicons name="trash-outline" size={24} onPress={handleDeleteExercise} />
+            </ThemedText>
+        </ThemedCard>
     );
 }
 
@@ -52,19 +58,18 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                 props.setVisible(false);
                 setName("");
             }}
-            transparent={true}
+            transparent={false}
             // keyboard, mysteriously, will not open without a short timeout here
             onShow={() => setTimeout(() => nameRef.current?.focus(), 100)}
         >
-            <View
+            <ThemedView
                 style={{
-                    ...styles.container,
                     flex: 1,
                     padding: 30,
                 }}
             >
-                <Text style={{...styles.title, marginBottom: 20}}>Add Exercise</Text>
-                <TextInput
+                <ThemedText style={{...styles.title, marginBottom: 20}}>Add Exercise</ThemedText>
+                <ThemedTextInput
                     ref={nameRef}
                     style={{
                         ...styles.input,
@@ -72,7 +77,6 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                     }}
                     value={name}
                     placeholder="Exercise name"
-                    placeholderTextColor={foregroundColor}
                     onChangeText={(text) => setName(text)}
                 />
                 <Button title="Save" onPress={() => {
@@ -81,7 +85,7 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                         setName("");
                     }
                 }} />
-            </View>
+            </ThemedView>
         </Modal>
     )
 }
@@ -91,9 +95,8 @@ export type ExercisesHeaderProps = {
 }
 function ExercisesHeader(props: ExercisesHeaderProps) {
     return (
-        <View
+        <ThemedView
             style={{
-                ...styles.container,
                 flex: 1,
                 flexDirection: "row",
                 alignItems: "center",
@@ -101,19 +104,16 @@ function ExercisesHeader(props: ExercisesHeaderProps) {
                 marginBottom: 20,
             }}
         >
-            <Ionicons
-                name="arrow-back-outline"
-                size={32}
-                style={{color: backgroundColor}}
-            />
-            <Text style={{...styles.title}}>Exercises</Text>
-            <Ionicons
-                name="add-outline"
-                size={32}
-                style={{...styles.text}}
-                onPress={props.onPress}
-            />
-        </View>
+            <ThemedInvisibleIcon />
+            <ThemedText style={{...styles.title}}>Exercises</ThemedText>
+            <ThemedText>
+                <Ionicons
+                    name="add-outline"
+                    size={32}
+                    onPress={props.onPress}
+                />
+            </ThemedText>
+        </ThemedView>
     );
 }
 
@@ -145,7 +145,6 @@ export default function ExercisesScreen() {
     return (
         <SafeAreaView
             style={{
-                    ...styles.container,
                     flex: 1,
                     padding: 10,
                 }}

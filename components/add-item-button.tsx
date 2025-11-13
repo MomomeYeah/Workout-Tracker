@@ -1,10 +1,13 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useTheme } from "@react-navigation/native";
 import { GestureResponderEvent, Pressable } from "react-native";
 
 export type AddItemButtonProps = {
     onPress: (event: GestureResponderEvent) => void,
 }
 export default function AddItemButton(props: AddItemButtonProps) {
+    const theme = useTheme();
+
     return (
         <Pressable
             style={{
@@ -13,7 +16,7 @@ export default function AddItemButton(props: AddItemButtonProps) {
                 right: 20,
                 height: 50,
                 width: 50,
-                backgroundColor: "#fff",
+                backgroundColor: theme.colors.text,
                 flex: 1,
                 alignItems: "center",
                 justifyContent: "center",
@@ -21,7 +24,7 @@ export default function AddItemButton(props: AddItemButtonProps) {
             }}
             onPress={props.onPress}
         >
-            <Ionicons name="add-outline" size={32} />
+            <Ionicons style={{color: theme.colors.background}} name="add-outline" size={32} />
         </Pressable>
     );
 }

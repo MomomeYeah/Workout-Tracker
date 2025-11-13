@@ -72,7 +72,7 @@ export default function SeedScreen() {
     };
 
     return (
-        <View style={{...styles.container, ...styles.centredFlex}}>
+        <View style={{...styles.centredFlex}}>
             <Button title="Seed Application Data" onPress={handleSeed} />
         </View>
     );

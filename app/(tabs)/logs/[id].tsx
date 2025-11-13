@@ -1,3 +1,7 @@
+import ThemedCard from "@/components/themed-card";
+import ThemedText from "@/components/themed-text";
+import ThemedTextInput from "@/components/themed-text-input";
+import ThemedView from "@/components/themed-view";
 import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -7,7 +11,7 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from "react";
-import { GestureResponderEvent, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { GestureResponderEvent, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function Set(set: schema.LogExerciseSetsTableSelectType) {
@@ -33,14 +37,13 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
     }
 
     return (
-        <View
-            key={set.id}
+        <ThemedView
             style={{
                 flex: 1,
                 flexDirection: "row",
             }}
         >
-            <TextInput
+            <ThemedTextInput
                 style={{
                     ...styles.input,
                     flexGrow: 1,
@@ -53,7 +56,7 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
                     handleOnUpdate({newWeight: weight});
                 }}
             />
-            <TextInput
+            <ThemedTextInput
                 style={{
                     ...styles.input,
                     flexGrow: 1,
@@ -66,7 +69,7 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
                     handleOnUpdate({newReps: reps});
                 }}
             />
-            <TextInput
+            <ThemedTextInput
                 style={{
                     ...styles.input,
                     flexGrow: 1,
@@ -80,24 +83,22 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
                     handleOnUpdate({newNotes: notes});
                 }}
             />
-        </View>
+        </ThemedView>
     );
 }
 
 function Exercise(exercise: schema.LogExercisesTableSelectType) {
     return (
-        <View
-            style={{...styles.card}}
-        >
-            <Text style={{...styles.title, marginBottom: 10}}>
+        <ThemedCard>
+            <ThemedText style={{marginBottom: 10}}>
                 {exercise.exercise.name}
-            </Text>
+            </ThemedText>
             {
                 exercise.sets.map((set) => (
                     <Set key={set.id} {...set} />
                 ))
             }
-        </View>
+        </ThemedCard>
     );
 }
 
@@ -111,9 +112,8 @@ function WorkoutHeader(props: WorkoutHeaderProps) {
     }
 
     return (
-        <View
+        <ThemedView
             style={{
-                ...styles.container,
                 flex: 1,
                 flexDirection: "row",
                 alignItems: "center",
@@ -121,20 +121,22 @@ function WorkoutHeader(props: WorkoutHeaderProps) {
                 marginBottom: 20,
             }}
         >
-            <Ionicons
-                name="arrow-back-outline"
-                size={32}
-                style={{...styles.text}}
-                onPress={handleBack}
-            />
-            <Text style={{...styles.title}}>Workout</Text>
-            <Ionicons
-                name="trash-sharp"
-                size={32}
-                style={{...styles.text}}
-                onPress={props.onPress}
-            />
-        </View>
+            <ThemedText>
+                <Ionicons
+                    name="arrow-back-outline"
+                    size={32}
+                    onPress={handleBack}
+                />
+            </ThemedText>
+            <ThemedText style={{...styles.title}}>Workout</ThemedText>
+            <ThemedText>
+                <Ionicons
+                    name="trash-outline"
+                    size={32}
+                    onPress={props.onPress}
+                />
+            </ThemedText>
+        </ThemedView>
     );
 }
 
@@ -212,160 +214,142 @@ export default function Workout() {
     }
 
     return (
-        <SafeAreaView
-            style={{
-                flex: 1,
-                backgroundColor: "#25292e",
-                padding: 10,
-            }}
-        >
-            <ScrollView>
-                <WorkoutHeader onPress={handleOnDelete} />
-                <View
-                    style={{
-                        flex: 1,
-                        flexDirection: "column",
-                    }}
-                >
-                    <View style={{marginBottom: 10}}>
-                        <TextInput
-                            style={{
-                                ...styles.input,
-                            }}
-                            value={title}
-                            onChangeText={(text) => {
-                                setTitle(text);
-                                handleOnUpdate({newTitle: text});
-                            }}
-                        />
-                        <View
-                            style={{
-                                flex: 1,
-                                flexDirection: "row",
-                                flexGrow: 1,
-                            }}
-                        >
-                            <Pressable
+        <SafeAreaView style={{flex: 1}}>
+            <ThemedView
+                style={{
+                    flex: 1,
+                    padding: 10,
+                }}
+            >
+                <ScrollView>
+                    <WorkoutHeader onPress={handleOnDelete} />
+                    <View
+                        style={{
+                            flex: 1,
+                            flexDirection: "column",
+                        }}
+                    >
+                        <ThemedCard>
+                            <ThemedTextInput
                                 style={{
-                                    ...styles.pressableInput,
+                                    ...styles.input,
+                                }}
+                                value={title}
+                                onChangeText={(text) => {
+                                    setTitle(text);
+                                    handleOnUpdate({newTitle: text});
+                                }}
+                            />
+                            <View
+                                style={{
+                                    flex: 1,
+                                    flexDirection: "row",
                                     flexGrow: 1,
                                 }}
-                                onPress={() => setShowDatePicker(true)}
                             >
-                                <TextInput
-                                    style={{...styles.text}}
-                                    editable={false}
+                                <Pressable
+                                    style={{flexGrow: 1}}
+                                    onPress={() => setShowDatePicker(true)}
                                 >
-                                    {startTime.toLocaleDateString()}
-                                </TextInput>
-                            </Pressable>
-                            {
-                                showDatePicker &&
-                                <DateTimePicker
-                                    value={new Date(startTime)}
-                                    mode="date"
-                                    onChange={(event, selectDate) => {
-                                        setShowDatePicker(false);
-                                        if (selectDate) {
-                                            setStartTime(selectDate);
+                                    <ThemedTextInput style={{...styles.input}} editable={false}>
+                                        {startTime.toLocaleDateString()}
+                                    </ThemedTextInput>
+                                </Pressable>
+                                {
+                                    showDatePicker &&
+                                    <DateTimePicker
+                                        value={new Date(startTime)}
+                                        mode="date"
+                                        onChange={(event, selectDate) => {
+                                            setShowDatePicker(false);
+                                            if (selectDate) {
+                                                setStartTime(selectDate);
 
-                                            const newEndTime = endTime;
-                                            if (newEndTime) {
-                                                newEndTime.setFullYear(selectDate.getFullYear());
-                                                newEndTime.setMonth(selectDate.getMonth());
-                                                newEndTime.setDate(selectDate.getDate());
+                                                const newEndTime = endTime;
+                                                if (newEndTime) {
+                                                    newEndTime.setFullYear(selectDate.getFullYear());
+                                                    newEndTime.setMonth(selectDate.getMonth());
+                                                    newEndTime.setDate(selectDate.getDate());
+                                                }
+
+                                                handleOnUpdate({
+                                                    newStartTime: selectDate,
+                                                    newEndTime: newEndTime,
+                                                });
                                             }
-
-                                            handleOnUpdate({
-                                                newStartTime: selectDate,
-                                                newEndTime: newEndTime,
-                                            });
-                                        }
-                                    }}
-                                />
-                            }
-                            <Pressable
-                                style={{
-                                    ...styles.pressableInput,
-                                    flexGrow: 1,
-                                }}
-                                onPress={() => setShowStartTimePicker(true)}
-                            >
-                                <TextInput
-                                    style={{...styles.text}}
-                                    editable={false}
+                                        }}
+                                    />
+                                }
+                                <Pressable
+                                    style={{flexGrow: 1}}
+                                    onPress={() => setShowStartTimePicker(true)}
                                 >
-                                    {startTime.toLocaleTimeString()}
-                                </TextInput>
-                            </Pressable>
-                            {
-                                showStartTimePicker &&
-                                <DateTimePicker
-                                    value={new Date(startTime)}
-                                    mode="time"
-                                    onChange={(event, selectDate) => {
-                                        setShowStartTimePicker(false);
-                                        if (selectDate) {
-                                            setStartTime(selectDate);
-                                            handleOnUpdate({newStartTime: selectDate});
-                                        }
-                                    }}
-                                />
-                            }
-                            <Pressable
-                                style={{
-                                    ...styles.pressableInput,
-                                    flexGrow: 1,
-                                }}
-                                onPress={() => setShowEndTimePicker(true)}
-                            >
-                                <TextInput
-                                    style={{...styles.text}}
-                                    editable={false}
+                                    <ThemedTextInput style={{...styles.input}} editable={false}>
+                                        {startTime.toLocaleTimeString()}
+                                    </ThemedTextInput>
+                                </Pressable>
+                                {
+                                    showStartTimePicker &&
+                                    <DateTimePicker
+                                        value={new Date(startTime)}
+                                        mode="time"
+                                        onChange={(event, selectDate) => {
+                                            setShowStartTimePicker(false);
+                                            if (selectDate) {
+                                                setStartTime(selectDate);
+                                                handleOnUpdate({newStartTime: selectDate});
+                                            }
+                                        }}
+                                    />
+                                }
+                                <Pressable
+                                    style={{flexGrow: 1}}
+                                    onPress={() => setShowEndTimePicker(true)}
                                 >
-                                    {endTime?.toLocaleTimeString()}
-                                </TextInput>
-                            </Pressable>
+                                    <ThemedTextInput style={{...styles.input}} editable={false}>
+                                        {endTime?.toLocaleTimeString()}
+                                    </ThemedTextInput>
+                                </Pressable>
+                                {
+                                    showEndTimePicker &&
+                                    <DateTimePicker
+                                        value={endTime ? new Date(endTime) : new Date()}
+                                        mode="time"
+                                        onChange={(event, selectDate) => {
+                                            setShowEndTimePicker(false);
+                                            if (selectDate) {
+                                                setEndTime(selectDate);
+                                                handleOnUpdate({newEndTime: selectDate});
+                                            }
+                                        }}
+                                    />
+                                }
+                            </View>
+                            <ThemedTextInput
+                                style={{
+                                    ...styles.input,
+                                    flexGrow: 1,
+                                    verticalAlign: "top"
+                                }}
+                                value={notes}
+                                multiline
+                                placeholder="Notes"
+                                onChangeText={(text) => {
+                                    setNotes(text);
+                                    handleOnUpdate({newNotes: text});
+                                }}
+                            />
+                        </ThemedCard>
+                        <View>
                             {
-                                showEndTimePicker &&
-                                <DateTimePicker
-                                    value={endTime ? new Date(endTime) : new Date()}
-                                    mode="time"
-                                    onChange={(event, selectDate) => {
-                                        setShowEndTimePicker(false);
-                                        if (selectDate) {
-                                            setEndTime(selectDate);
-                                            handleOnUpdate({newEndTime: selectDate});
-                                        }
-                                    }}
-                                />
+                                exercises.map((exercise, index) => (
+                                    <Exercise key={index} {...exercise} />
+                                ))
                             }
                         </View>
-                        <TextInput
-                            style={{
-                                ...styles.input,
-                                flexGrow: 1,
-                                verticalAlign: "top"
-                            }}
-                            value={notes}
-                            multiline
-                            placeholder="Notes"
-                            placeholderTextColor="#fff"
-                            onChangeText={(text) => {
-                                setNotes(text);
-                                handleOnUpdate({newNotes: text});
-                            }}
-                        />
                     </View>
-                    <View>
-                        {
-                            exercises.map((exercise, index) => (
-                                <Exercise key={index} {...exercise} />
-                            ))
-                        }
-                    </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </ThemedView>
         </SafeAreaView>
     );
 }
