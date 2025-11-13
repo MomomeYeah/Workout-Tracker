@@ -1,6 +1,7 @@
 import AddItemButton from "@/components/add-item-button";
-import { styles } from "@/constants/theme";
+import { backgroundColor, styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useRouter } from "expo-router";
@@ -90,6 +91,33 @@ function Workout(item: schema.LogsTableSelectType) {
     );
 }
 
+function LogsHeader() {
+    return (
+        <View
+            style={{
+                ...styles.container,
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 20,
+            }}
+        >
+            <Ionicons
+                name="ellipsis-vertical-sharp"
+                size={32}
+                style={{color: backgroundColor}}
+            />
+            <Text style={{...styles.title}}>Workout Logs</Text>
+            <Ionicons
+                name="ellipsis-vertical-sharp"
+                size={32}
+                style={{...styles.text}}
+            />
+        </View>
+    );
+}
+
 export default function Index() {
     const logDB = drizzle(useSQLiteContext(), { schema });
     useDrizzleStudio(useSQLiteContext());
@@ -128,6 +156,7 @@ export default function Index() {
         <SafeAreaView style={{
             ...styles.container,
             flex: 1,
+            padding: 10,
         }}>
             <FlatList
                 data={logs}
@@ -135,6 +164,8 @@ export default function Index() {
                     <Workout {...item} />
                 )}
                 keyExtractor={log => log.id.toString()}
+                ListHeaderComponent={<LogsHeader />}
+                stickyHeaderIndices={[0]}
             />
             <AddItemButton onPress={handleCreateWorkout} />
         </SafeAreaView>

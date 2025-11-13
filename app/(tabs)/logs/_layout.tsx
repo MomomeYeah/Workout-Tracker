@@ -1,4 +1,3 @@
-import { foregroundColor, styles } from "@/constants/theme";
 import { Stack } from "expo-router";
 
 export default function LogsLayout() {
@@ -9,17 +8,7 @@ export default function LogsLayout() {
             }}
         >
             <Stack.Screen name="index" />
-            <Stack.Screen
-                name="[id]"
-                options={{
-                    headerShown: true,
-                    headerStyle: {
-                        ...styles.container,
-                    },
-                    headerTintColor: foregroundColor,
-                    headerTitle: "",
-                }}
-            />
+            <Stack.Screen name="[id]" />
         </Stack>
     );
 }

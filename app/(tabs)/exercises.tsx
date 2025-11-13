@@ -1,4 +1,4 @@
-import { foregroundColor, styles } from "@/constants/theme";
+import { backgroundColor, foregroundColor, styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { eq, sql } from "drizzle-orm";
@@ -101,6 +101,11 @@ function ExercisesHeader(props: ExercisesHeaderProps) {
                 marginBottom: 20,
             }}
         >
+            <Ionicons
+                name="arrow-back-outline"
+                size={32}
+                style={{color: backgroundColor}}
+            />
             <Text style={{...styles.title}}>Exercises</Text>
             <Ionicons
                 name="add-outline"
@@ -151,9 +156,7 @@ export default function ExercisesScreen() {
                     <Exercise {...item} />
                 )}
                 keyExtractor={exercise => exercise.id.toString()}
-                ListHeaderComponent={() => (
-                    <ExercisesHeader onPress={handleOpenCreateExercise} />
-                )}
+                ListHeaderComponent={<ExercisesHeader onPress={handleOpenCreateExercise} />}
                 stickyHeaderIndices={[0]}
             />
             <AddExerciseModal visible={modalVisible} setVisible={setModalVisible} handleCreateExercise={handleCreateExercise} />
