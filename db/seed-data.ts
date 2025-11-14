@@ -13,9 +13,9 @@ export const exercises = [
 ];
 
 export const logs = [
-    {title: "Upper 2", startTime: 1764523800000, endTime: 1764526500000},
-    {title: "Legs", startTime: 1764699300000, endTime: 1764701220000},
-    {title: "Upper 1", startTime: 1764790200000, endTime: 1764792600000},
+    {title: "Upper 2", startTime: 1761975000000, endTime: 1761977700000},
+    {title: "Legs", startTime: 1762150500000, endTime: 1762152420000},
+    {title: "Upper 1", startTime: 1762241400000, endTime: 1762243800000},
 ];
 
 export const log_exercises = [

@@ -6,6 +6,7 @@ import ThemedView from "@/components/themed-view";
 import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { asc, desc } from "drizzle-orm";
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -27,7 +28,7 @@ function Workout(item: schema.LogsTableSelectType) {
     const duration = durationMins ? `${durationMins} mins` : "";
 
     const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
-    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEV"];
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
     async function gotoWorkout() {
         router.navigate({
@@ -56,7 +57,7 @@ function Workout(item: schema.LogsTableSelectType) {
                 >
                     <ThemedText>{daysOfWeek[startTime.getDay()]}</ThemedText>
                     <ThemedText>{startTime.getDate().toString().padStart(2, "0")}</ThemedText>
-                    <ThemedText>{months[startTime.getMonth() - 1]}</ThemedText>
+                    <ThemedText>{months[startTime.getMonth()]}</ThemedText>
                 </View>
                 <View
                     style={{
@@ -138,8 +139,7 @@ export default function Index() {
         React.useCallback(() => {
             async function getLogs() {
                 const logs = await logDB
-                    .query
-                    .LogsTable
+                    .query.LogsTable
                     .findMany({
                         with: {
                             exercises: {
@@ -148,7 +148,11 @@ export default function Index() {
                                     sets: true,
                                 }
                             }
-                        }
+                        },
+                        orderBy: [
+                            desc(schema.LogsTable.startTime),
+                            asc(schema.LogsTable.title)
+                        ]
                     })
 
                 setLogs(logs);
