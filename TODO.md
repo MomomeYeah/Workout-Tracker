@@ -1,8 +1,7 @@
 # Basic Workout Log Functionality
-- Delete workout exercise sets
-- Add workout exercise sets
-- Add workout exercises
 - Refresh workout list on exercise / set change
+- Remove workout exercises when removing last log
+- Add empty log for newly-added workout exercises
 
 # Workout UI
 - toggles for deload weeks, lighter weeks, etc.

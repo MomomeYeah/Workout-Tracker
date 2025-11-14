@@ -6,12 +6,12 @@ import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from "react";
-import { Button, GestureResponderEvent, Pressable, ScrollView, View } from "react-native";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Button, GestureResponderEvent, Modal, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function Set(set: schema.LogExerciseSetsTableSelectType) {
@@ -167,6 +167,60 @@ function Exercise({log_exercise_id}: {log_exercise_id: number}) {
     );
 }
 
+type AddExerciseModalProps = {
+    visible: boolean,
+    setVisible: Dispatch<SetStateAction<boolean>>
+    handleAddExercise: (id: number) => Promise<void>,
+}
+function AddExerciseModal(props: AddExerciseModalProps) {
+    const logDB = drizzle(useSQLiteContext(), { schema });
+    const { data: exercises, error, updatedAt } = useLiveQuery(
+        logDB.query.ExercisesTable.findMany()
+    );
+
+    return (
+        <Modal
+            animationType="slide"
+            visible={props.visible}
+            onRequestClose={() => {
+                props.setVisible(false);
+            }}
+            transparent={false}
+        >
+            <ThemedView
+                style={{
+                    flex: 1,
+                    padding: 30,
+                }}
+            >
+                <ThemedText style={{...styles.title, marginBottom: 20}}>Add Exercise</ThemedText>
+                {
+                    exercises.map((exercise) => (
+                        <View
+                            key={exercise.id}
+                            style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <ThemedText style={{}}>{exercise.name}</ThemedText>
+                            <ThemedText>
+                                <Ionicons
+                                    name="add-outline"
+                                    size={24}
+                                    onPress={() => props.handleAddExercise(exercise.id)}
+                                />
+                            </ThemedText>
+                        </View>
+                    ))
+                }
+            </ThemedView>
+        </Modal>
+    )
+}
+
 export type WorkoutHeaderProps = {
     onPress: (event: GestureResponderEvent) => void,
 }
@@ -247,6 +301,33 @@ export default function Workout() {
             }
         })
     );
+    
+    const [addExerciseModalVisible, setAddExerciseModalVisible] = useState(false);
+    function handleOpenAddExerciseModal() {
+        setAddExerciseModalVisible(true);
+    }
+    async function handleAddExercise(exercise_id: number) {
+        const existingRelation = await logDB
+            .select()
+            .from(schema.LogExercisesTable)
+            .where(
+                and(
+                    eq(schema.LogExercisesTable.exercise_id, exercise_id),
+                    eq(schema.LogExercisesTable.log_id, +id)
+                )
+            );
+
+        if (existingRelation.length === 0) {
+            await logDB
+                .insert(schema.LogExercisesTable)
+                .values({
+                    log_id: +id,
+                    exercise_id: exercise_id
+                });
+        }
+
+        setAddExerciseModalVisible(false);
+    }
 
     type UpdateProps = {
         newTitle?: string,
@@ -411,6 +492,12 @@ export default function Workout() {
                                 ))
                             }
                         </View>
+                        <Button title="Add Exercise" onPress={handleOpenAddExerciseModal} />
+                        <AddExerciseModal
+                            visible={addExerciseModalVisible}
+                            setVisible={setAddExerciseModalVisible}
+                            handleAddExercise={handleAddExercise}
+                        />
                     </View>
                 </ScrollView>
             </ThemedView>
