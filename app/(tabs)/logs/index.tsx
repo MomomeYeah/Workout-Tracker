@@ -6,10 +6,11 @@ import ThemedView from "@/components/themed-view";
 import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
+import React, { useState } from "react";
 import {
     FlatList,
     Pressable,
@@ -132,17 +133,33 @@ export default function Index() {
         });
     }
 
-    const { data: logs, error, updatedAt } = useLiveQuery(
-        logDB.query.LogsTable.findMany({
-            with: {
-                exercises: {
-                    with: {
-                        exercise: true,
-                        sets: true,
-                    }
-                }
+    const [logs, setLogs] = useState<Array<schema.LogsTableSelectType>>([]);
+    useFocusEffect(
+        React.useCallback(() => {
+            async function getLogs() {
+                const logs = await logDB
+                    .query
+                    .LogsTable
+                    .findMany({
+                        with: {
+                            exercises: {
+                                with: {
+                                    exercise: true,
+                                    sets: true,
+                                }
+                            }
+                        }
+                    })
+
+                setLogs(logs);
             }
-        })
+
+            getLogs();
+
+            return () => {
+                // cleanup function for when component loses focus
+            }
+        }, [])
     );
 
     return (
