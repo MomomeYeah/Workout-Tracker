@@ -88,11 +88,35 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
 }
 
 function Exercise(exercise: schema.LogExercisesTableSelectType) {
+    const logDB = drizzle(useSQLiteContext(), { schema });
+    async function handleDeleteExercise() {
+        await logDB
+            .delete(schema.LogExercisesTable)
+            .where(eq(schema.LogExercisesTable.exercise_id, exercise.exercise_id));
+    }
+
     return (
         <ThemedCard>
-            <ThemedText style={{marginBottom: 10}}>
-                {exercise.exercise.name}
-            </ThemedText>
+            <View
+                style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 10
+                }}
+            >
+                <ThemedText>
+                    {exercise.exercise.name}
+                </ThemedText>
+                <ThemedText>
+                    <Ionicons
+                        name="trash-outline"
+                        size={24}
+                        onPress={handleDeleteExercise}
+                    />
+                </ThemedText>
+            </View>
             {
                 exercise.sets.map((set) => (
                     <Set key={set.id} {...set} />
