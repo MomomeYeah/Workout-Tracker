@@ -11,7 +11,7 @@ import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from "react";
-import { GestureResponderEvent, Pressable, ScrollView, View } from "react-native";
+import { Button, GestureResponderEvent, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function Set(set: schema.LogExerciseSetsTableSelectType) {
@@ -36,11 +36,18 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
             .where(eq(schema.LogExerciseSetsTable.id, set.id))
     }
 
+    async function handleDeleteSet() {
+        await logDB
+            .delete(schema.LogExerciseSetsTable)
+            .where(eq(schema.LogExerciseSetsTable.id, set.id));
+    }
+
     return (
-        <ThemedView
+        <View
             style={{
                 flex: 1,
                 flexDirection: "row",
+                alignItems: "center",
             }}
         >
             <ThemedTextInput
@@ -83,7 +90,14 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
                     handleOnUpdate({newNotes: notes});
                 }}
             />
-        </ThemedView>
+            <ThemedText>
+                <Ionicons
+                    name="trash-outline"
+                    size={24}
+                    onPress={handleDeleteSet}
+                />
+            </ThemedText>
+        </View>
     );
 }
 
@@ -111,6 +125,14 @@ function Exercise({log_exercise_id}: {log_exercise_id: number}) {
             .where(eq(schema.LogExercisesTable.id, log_exercise_id));
     }
 
+    async function handleCreateSet() {
+        await logDB
+            .insert(schema.LogExerciseSetsTable)
+            .values({
+                log_exercise_id: log_exercise_id
+            });
+    }
+
     return (
         <ThemedCard>
             <View
@@ -133,11 +155,14 @@ function Exercise({log_exercise_id}: {log_exercise_id: number}) {
                     />
                 </ThemedText>
             </View>
-            {
-                sets.map((set) => (
-                    <Set key={set.id} {...set} />
-                ))
-            }
+            <View style={{marginBottom: 10}}>
+                {
+                    sets.map((set) => (
+                        <Set key={set.id} {...set} />
+                    ))
+                }
+            </View>
+            <Button title="Add Set" onPress={handleCreateSet} />
         </ThemedCard>
     );
 }
