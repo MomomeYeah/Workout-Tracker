@@ -188,7 +188,9 @@ type AddExerciseModalProps = {
 function AddExerciseModal(props: AddExerciseModalProps) {
     const logDB = drizzle(useSQLiteContext(), { schema });
     const { data: exercises, error, updatedAt } = useLiveQuery(
-        logDB.query.ExercisesTable.findMany()
+        logDB.query.ExercisesTable.findMany({
+            orderBy: schema.ExercisesTable.name
+        })
     );
 
     return (
