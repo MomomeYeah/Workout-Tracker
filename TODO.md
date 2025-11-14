@@ -1,3 +1,9 @@
+# Basic Workout Log Functionality
+- Delete workout exercise sets
+- Add workout exercise sets
+- Add workout exercises
+- Refresh workout list on exercise / set change
+
 # Workout UI
 - toggles for deload weeks, lighter weeks, etc.
 - UI for supersets, drop sets, myo-reps, etc.

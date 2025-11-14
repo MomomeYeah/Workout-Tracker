@@ -7,7 +7,7 @@ import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { eq } from "drizzle-orm";
-import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from "react";
@@ -87,12 +87,28 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
     );
 }
 
-function Exercise(exercise: schema.LogExercisesTableSelectType) {
+function Exercise({log_exercise_id}: {log_exercise_id: number}) {
     const logDB = drizzle(useSQLiteContext(), { schema });
+
+    const { data: exercise } = useLiveQuery(
+        logDB.query.LogExercisesTable.findFirst({
+            where: eq(schema.LogExercisesTable.id, log_exercise_id),
+            with: {
+                exercise: true
+            }
+        })
+    );
+
+    const { data: sets } = useLiveQuery(
+        logDB.query.LogExerciseSetsTable.findMany({
+            where: eq(schema.LogExerciseSetsTable.log_exercise_id, log_exercise_id)
+        })
+    );
+
     async function handleDeleteExercise() {
         await logDB
             .delete(schema.LogExercisesTable)
-            .where(eq(schema.LogExercisesTable.exercise_id, exercise.exercise_id));
+            .where(eq(schema.LogExercisesTable.id, log_exercise_id));
     }
 
     return (
@@ -107,7 +123,7 @@ function Exercise(exercise: schema.LogExercisesTableSelectType) {
                 }}
             >
                 <ThemedText>
-                    {exercise.exercise.name}
+                    {exercise?.exercise.name}
                 </ThemedText>
                 <ThemedText>
                     <Ionicons
@@ -118,7 +134,7 @@ function Exercise(exercise: schema.LogExercisesTableSelectType) {
                 </ThemedText>
             </View>
             {
-                exercise.sets.map((set) => (
+                sets.map((set) => (
                     <Set key={set.id} {...set} />
                 ))
             }
@@ -178,28 +194,18 @@ export default function Workout() {
     const [showEndTimePicker, setShowEndTimePicker] = useState(false);
     
     const [notes, setNotes] = useState("");
-    const [exercises, setExercises] = useState<Array<schema.LogExercisesTableSelectType>>([]);
 
     useEffect(() => {
         (async () => {
             const log = await logDB
                 .query.LogsTable.findFirst({
                     where: eq(schema.LogsTable.id, +id),
-                    with: {
-                        exercises: {
-                            with: {
-                                exercise: true,
-                                sets: true,
-                            }
-                        }
-                    }
                 });
 
             if (log) {
                 setTitle(log.title);
                 setStartTime(new Date(log.startTime));
                 setNotes(log.notes ?? "");
-                setExercises(log.exercises);
 
                 if (log.endTime) {
                     setEndTime(new Date(log.endTime));
@@ -207,6 +213,15 @@ export default function Workout() {
             }
         })();
     }, []);
+
+    const { data: log_exercises, error, updatedAt } = useLiveQuery(
+        logDB.query.LogExercisesTable.findMany({
+            where: eq(schema.LogExercisesTable.log_id, +id),
+            with: {
+                exercise: true,
+            }
+        })
+    );
 
     type UpdateProps = {
         newTitle?: string,
@@ -366,8 +381,8 @@ export default function Workout() {
                         </ThemedCard>
                         <View>
                             {
-                                exercises.map((exercise, index) => (
-                                    <Exercise key={index} {...exercise} />
+                                log_exercises.map((log_exercise) => (
+                                    <Exercise key={log_exercise.id} log_exercise_id={log_exercise.id} />
                                 ))
                             }
                         </View>
