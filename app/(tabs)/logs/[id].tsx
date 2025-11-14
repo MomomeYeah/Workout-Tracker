@@ -6,7 +6,7 @@ import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { and, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
@@ -37,9 +37,22 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
     }
 
     async function handleDeleteSet() {
+        // delete this set
         await logDB
             .delete(schema.LogExerciseSetsTable)
             .where(eq(schema.LogExerciseSetsTable.id, set.id));
+
+        // if associated exercise has no remaining sets, delete it as well
+        const remainingSets = await logDB
+            .select({count: count()})
+            .from(schema.LogExerciseSetsTable)
+            .where(eq(schema.LogExerciseSetsTable.log_exercise_id, set.log_exercise_id));
+
+        if (remainingSets[0].count === 0) {
+            await logDB
+                .delete(schema.LogExercisesTable)
+                .where(eq(schema.LogExercisesTable.id, set.log_exercise_id));
+        }
     }
 
     return (
@@ -317,12 +330,21 @@ export default function Workout() {
                 )
             );
 
+        // if the selected exercise already exists on this workout, do nothing
         if (existingRelation.length === 0) {
-            await logDB
+            const log_exercise = await logDB
                 .insert(schema.LogExercisesTable)
                 .values({
                     log_id: +id,
                     exercise_id: exercise_id
+                })
+                .returning();
+
+            // add an initial set for new exercises
+            await logDB
+                .insert(schema.LogExerciseSetsTable)
+                .values({
+                    log_exercise_id: log_exercise[0].id
                 });
         }
 
