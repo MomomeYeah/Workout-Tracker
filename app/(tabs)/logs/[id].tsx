@@ -402,6 +402,7 @@ export default function Workout() {
                             <ThemedTextInput
                                 style={{
                                     ...styles.input,
+                                    margin: 1,
                                 }}
                                 value={title}
                                 onChangeText={(text) => {
@@ -417,7 +418,7 @@ export default function Workout() {
                                 }}
                             >
                                 <Pressable
-                                    style={{flexGrow: 1}}
+                                    style={{flexGrow: 1, margin: 1}}
                                     onPress={() => setShowDatePicker(true)}
                                 >
                                     <ThemedTextInput style={{...styles.input}} editable={false}>
@@ -450,7 +451,7 @@ export default function Workout() {
                                     />
                                 }
                                 <Pressable
-                                    style={{flexGrow: 1}}
+                                    style={{flexGrow: 1, margin: 1}}
                                     onPress={() => setShowStartTimePicker(true)}
                                 >
                                     <ThemedTextInput style={{...styles.input}} editable={false}>
@@ -472,7 +473,7 @@ export default function Workout() {
                                     />
                                 }
                                 <Pressable
-                                    style={{flexGrow: 1}}
+                                    style={{flexGrow: 1, margin: 1}}
                                     onPress={() => setShowEndTimePicker(true)}
                                 >
                                     <ThemedTextInput style={{...styles.input}} editable={false}>
@@ -498,7 +499,8 @@ export default function Workout() {
                                 style={{
                                     ...styles.input,
                                     flexGrow: 1,
-                                    verticalAlign: "top"
+                                    verticalAlign: "top",
+                                    margin: 1
                                 }}
                                 value={notes}
                                 multiline
