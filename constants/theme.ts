@@ -1,19 +1,16 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-    centredFlex: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    title: {
+    h1: {
         fontSize: 22,
         fontWeight: "bold",
     },
-    input: {
-        paddingTop: 15,
-        paddingBottom: 15,
-        paddingLeft: 15,
-        paddingRight: 15,
+    h2: {
+        fontSize: 18,
+        fontWeight: "bold",
+    },
+    h3: {
+        fontSize: 16,
+        fontWeight: "bold",
     },
 });

@@ -73,7 +73,7 @@ function Workout(item: schema.LogsTableSelectType) {
                             justifyContent: "space-between"
                         }}
                     >
-                        <ThemedText>{item.title}</ThemedText>
+                        <ThemedText style={{...styles.h3}}>{item.title}</ThemedText>
                         <ThemedText>{duration}</ThemedText>
                     </View>
                     <View>
@@ -105,7 +105,7 @@ function LogsHeader() {
             }}
         >
             <ThemedInvisibleIcon />
-            <ThemedText style={{...styles.title}}>Workout Logs</ThemedText>
+            <ThemedText style={{...styles.h1}}>Workout Logs</ThemedText>
             <ThemedText>
                 <Ionicons name="ellipsis-vertical-sharp" size={32} />
             </ThemedText>

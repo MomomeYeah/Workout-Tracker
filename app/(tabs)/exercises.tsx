@@ -68,13 +68,10 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                     padding: 30,
                 }}
             >
-                <ThemedText style={{...styles.title, marginBottom: 20}}>Add Exercise</ThemedText>
+                <ThemedText style={{...styles.h1, marginBottom: 20}}>Add Exercise</ThemedText>
                 <ThemedTextInput
                     ref={nameRef}
-                    style={{
-                        ...styles.input,
-                        marginBottom: 10,
-                    }}
+                    style={{marginBottom: 10}}
                     value={name}
                     placeholder="Exercise name"
                     onChangeText={(text) => setName(text)}
@@ -105,7 +102,7 @@ function ExercisesHeader(props: ExercisesHeaderProps) {
             }}
         >
             <ThemedInvisibleIcon />
-            <ThemedText style={{...styles.title}}>Exercises</ThemedText>
+            <ThemedText style={{...styles.h1}}>Exercises</ThemedText>
             <ThemedText>
                 <Ionicons
                     name="add-outline"

@@ -65,7 +65,6 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
         >
             <ThemedTextInput
                 style={{
-                    ...styles.input,
                     flexGrow: 1,
                     flexBasis: 0,
                     margin: 1,
@@ -79,7 +78,6 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
             />
             <ThemedTextInput
                 style={{
-                    ...styles.input,
                     flexGrow: 1,
                     flexBasis: 0,
                     margin: 1,
@@ -93,7 +91,6 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
             />
             <ThemedTextInput
                 style={{
-                    ...styles.input,
                     flexGrow: 1,
                     flexBasis: 0,
                     margin: 1,
@@ -159,7 +156,7 @@ function Exercise({log_exercise_id}: {log_exercise_id: number}) {
                     marginBottom: 10
                 }}
             >
-                <ThemedText>
+                <ThemedText style={{...styles.h2}}>
                     {exercise?.exercise.name}
                 </ThemedText>
                 <ThemedText>
@@ -210,7 +207,7 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                     padding: 30,
                 }}
             >
-                <ThemedText style={{...styles.title, marginBottom: 20}}>Add Exercise</ThemedText>
+                <ThemedText style={{...styles.h1, marginBottom: 20}}>Add Exercise</ThemedText>
                 {
                     exercises.map((exercise) => (
                         <Pressable
@@ -268,7 +265,7 @@ function WorkoutHeader(props: WorkoutHeaderProps) {
                     onPress={handleBack}
                 />
             </ThemedText>
-            <ThemedText style={{...styles.title}}>Workout</ThemedText>
+            <ThemedText style={{...styles.h1}}>Workout</ThemedText>
             <ThemedText>
                 <Ionicons
                     name="trash-outline"
@@ -422,7 +419,6 @@ export default function Workout() {
                                 >
                                     <ThemedTextInput
                                         style={{
-                                            ...styles.input,
                                             margin: 1,
                                             flexGrow: 2,
                                             flexBasis: 0,
@@ -435,7 +431,6 @@ export default function Workout() {
                                     />
                                     <ThemedTextInput
                                         style={{
-                                            ...styles.input,
                                             margin: 1,
                                             flexGrow: 1,
                                             flexBasis: 0,
@@ -459,7 +454,7 @@ export default function Workout() {
                                         style={{flexGrow: 1, margin: 1}}
                                         onPress={() => setShowDatePicker(true)}
                                     >
-                                        <ThemedTextInput style={{...styles.input}} editable={false}>
+                                        <ThemedTextInput editable={false}>
                                             {startTime.toLocaleDateString()}
                                         </ThemedTextInput>
                                     </Pressable>
@@ -492,7 +487,7 @@ export default function Workout() {
                                         style={{flexGrow: 1, margin: 1}}
                                         onPress={() => setShowStartTimePicker(true)}
                                     >
-                                        <ThemedTextInput style={{...styles.input}} editable={false}>
+                                        <ThemedTextInput editable={false}>
                                             {startTime.toLocaleTimeString()}
                                         </ThemedTextInput>
                                     </Pressable>
@@ -514,7 +509,7 @@ export default function Workout() {
                                         style={{flexGrow: 1, margin: 1}}
                                         onPress={() => setShowEndTimePicker(true)}
                                     >
-                                        <ThemedTextInput style={{...styles.input}} editable={false}>
+                                        <ThemedTextInput editable={false}>
                                             {endTime?.toLocaleTimeString()}
                                         </ThemedTextInput>
                                     </Pressable>
@@ -535,7 +530,6 @@ export default function Workout() {
                                 </View>
                                 <ThemedTextInput
                                     style={{
-                                        ...styles.input,
                                         flexGrow: 1,
                                         verticalAlign: "top",
                                         margin: 1
