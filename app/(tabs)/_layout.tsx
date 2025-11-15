@@ -8,8 +8,6 @@ export default function RootLayout() {
     const colorScheme = useColorScheme();
     const activeTintColor = colorScheme === "dark" ? "#ffd33d" : "#ff723d";
 
-    console.log(theme.colors.card)
-
     return (
         <Tabs
             screenOptions={{
