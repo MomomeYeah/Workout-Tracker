@@ -1,0 +1,1 @@
+ALTER TABLE `Logs` RENAME COLUMN "bodyweight" TO "bodyWeight";

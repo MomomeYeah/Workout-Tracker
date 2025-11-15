@@ -285,6 +285,7 @@ export default function Workout() {
     const logDB = drizzle(useSQLiteContext(), { schema });
 
     const [title, setTitle] = useState("");
+    const [bodyWeight, setBodyWeight] = useState("");
 
     const [startTime, setStartTime] = useState<Date>(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -304,6 +305,7 @@ export default function Workout() {
 
             if (log) {
                 setTitle(log.title);
+                setBodyWeight(log.bodyWeight?.toString() ?? "");
                 setStartTime(new Date(log.startTime));
                 setNotes(log.notes ?? "");
 
@@ -361,6 +363,7 @@ export default function Workout() {
 
     type UpdateProps = {
         newTitle?: string,
+        newBodyWeight?: string,
         newStartTime?: Date,
         newEndTime?: Date,
         newNotes?: string
@@ -370,6 +373,7 @@ export default function Workout() {
             .update(schema.LogsTable)
             .set({
                 title: updateProps.newTitle ?? title,
+                bodyWeight: Number(updateProps.newBodyWeight ?? bodyWeight),
                 startTime: (updateProps.newStartTime ?? startTime).getTime(),
                 endTime: (updateProps.newEndTime ?? endTime)?.getTime(),
                 notes: updateProps.newNotes ?? notes,
@@ -409,17 +413,41 @@ export default function Workout() {
                             }}
                         >
                             <ThemedCard>
-                                <ThemedTextInput
+                                <View
                                     style={{
-                                        ...styles.input,
-                                        margin: 1,
+                                        flex: 1,
+                                        flexDirection: "row",
+                                        flexGrow: 1,
                                     }}
-                                    value={title}
-                                    onChangeText={(text) => {
-                                        setTitle(text);
-                                        handleOnUpdate({newTitle: text});
-                                    }}
-                                />
+                                >
+                                    <ThemedTextInput
+                                        style={{
+                                            ...styles.input,
+                                            margin: 1,
+                                            flexGrow: 2,
+                                            flexBasis: 0,
+                                        }}
+                                        value={title}
+                                        onChangeText={(text) => {
+                                            setTitle(text);
+                                            handleOnUpdate({newTitle: text});
+                                        }}
+                                    />
+                                    <ThemedTextInput
+                                        style={{
+                                            ...styles.input,
+                                            margin: 1,
+                                            flexGrow: 1,
+                                            flexBasis: 0,
+                                        }}
+                                        keyboardType="numeric"
+                                        value={bodyWeight}
+                                        onChangeText={(bodyWeight) => {
+                                            setBodyWeight(bodyWeight);
+                                            handleOnUpdate({newBodyWeight: bodyWeight});
+                                        }}
+                                    />
+                                </View>
                                 <View
                                     style={{
                                         flex: 1,

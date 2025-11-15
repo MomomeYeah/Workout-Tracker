@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { int, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const ExercisesTable = sqliteTable("Exercises", {
     id: int().primaryKey({ autoIncrement: true }),
@@ -8,9 +8,13 @@ export const ExercisesTable = sqliteTable("Exercises", {
 
 export type ExercisesTableSelectType = typeof ExercisesTable.$inferSelect;
 
+export const WorkoutType = ["Normal", "Deload"] as const;
+
 export const LogsTable = sqliteTable("Logs", {
     id: int().primaryKey({ autoIncrement: true }),
+    workout_type: text({ enum: WorkoutType}).notNull().default("Normal"),
     title: text().notNull(),
+    bodyWeight: real(),
     startTime: int().notNull(),
     endTime: int(),
     notes: text(),
@@ -41,9 +45,12 @@ export type LogExercisesTableSelectType = typeof LogExercisesTable.$inferSelect 
     "sets": Array<LogExerciseSetsTableSelectType>,
 };
 
+export const SetType = ["Warmup", "Normal", "Drop Set"] as const;
+
 export const LogExerciseSetsTable = sqliteTable("LogExerciseSets", {
     id: int().primaryKey({ autoIncrement: true }),
     log_exercise_id: int().notNull().references(() => LogExercisesTable.id, {onDelete: "cascade"}),
+    set_type: text({ enum: SetType}).notNull().default("Normal"),
     weight: int(),
     reps: int(),
     notes: text(),

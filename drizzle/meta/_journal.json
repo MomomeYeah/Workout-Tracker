@@ -43,6 +43,27 @@
       "when": 1762852340767,
       "tag": "0005_concerned_skrulls",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1763173867969,
+      "tag": "0006_majestic_rick_jones",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1763174248016,
+      "tag": "0007_skinny_landau",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1763174638098,
+      "tag": "0008_cloudy_lifeguard",
+      "breakpoints": true
     }
   ]
 }
