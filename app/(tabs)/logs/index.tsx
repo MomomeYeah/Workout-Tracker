@@ -1,11 +1,9 @@
 import AddItemButton from "@/components/add-item-button";
 import ThemedCard from "@/components/themed-card";
-import ThemedInvisibleIcon from "@/components/themed-invisible-icon";
 import ThemedText from "@/components/themed-text";
 import ThemedView from "@/components/themed-view";
 import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { asc, desc } from "drizzle-orm";
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
@@ -100,15 +98,11 @@ function LogsHeader() {
                 flex: 1,
                 flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 marginBottom: 20,
             }}
         >
-            <ThemedInvisibleIcon />
             <ThemedText style={{...styles.h1}}>Workout Logs</ThemedText>
-            <ThemedText>
-                <Ionicons name="ellipsis-vertical-sharp" size={32} />
-            </ThemedText>
         </ThemedView>
     );
 }

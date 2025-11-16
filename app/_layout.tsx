@@ -6,6 +6,7 @@ import { Stack } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from "react-native";
+import { MenuProvider } from 'react-native-popup-menu';
 
 export default function RootLayout() {
     const databaseName = "LogDatabase";
@@ -26,12 +27,14 @@ export default function RootLayout() {
                 }
             }}
         >
-            <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-                <Stack>
-                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                </Stack>
-                <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-            </ThemeProvider>
+            <MenuProvider>
+                <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+                    <Stack>
+                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    </Stack>
+                    <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+                </ThemeProvider>
+            </MenuProvider>
         </SQLiteProvider>
     )
 }

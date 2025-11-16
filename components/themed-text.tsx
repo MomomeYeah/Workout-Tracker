@@ -5,9 +5,9 @@ export default function ThemedText({style, ...rest}: TextProps) {
     const theme = useTheme();
 
     return <Text style={[
-        style,
         {
             color: theme.colors.text,
-        }
+        },
+        style,
     ]} {...rest} />
 }

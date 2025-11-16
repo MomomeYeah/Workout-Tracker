@@ -58,7 +58,7 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                 props.setVisible(false);
                 setName("");
             }}
-            transparent={false}
+            transparent={true}
             // keyboard, mysteriously, will not open without a short timeout here
             onShow={() => setTimeout(() => nameRef.current?.focus(), 100)}
         >

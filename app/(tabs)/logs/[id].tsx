@@ -6,12 +6,14 @@ import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useTheme } from "@react-navigation/native";
 import { and, count, eq } from "drizzle-orm";
 import { drizzle, useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, GestureResponderEvent, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, View } from "react-native";
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function Set(set: schema.LogExerciseSetsTableSelectType) {
@@ -243,6 +245,9 @@ export type WorkoutHeaderProps = {
     onPress: (event: GestureResponderEvent) => void,
 }
 function WorkoutHeader(props: WorkoutHeaderProps) {
+    const [contextMenuOpened, setContextMenuOpened] = useState(false);
+    const theme = useTheme();
+
     const router = useRouter();
     function handleBack() {
         router.back();
@@ -266,13 +271,45 @@ function WorkoutHeader(props: WorkoutHeaderProps) {
                 />
             </ThemedText>
             <ThemedText style={{...styles.h1}}>Workout</ThemedText>
-            <ThemedText>
-                <Ionicons
-                    name="trash-outline"
-                    size={32}
-                    onPress={props.onPress}
-                />
-            </ThemedText>
+            <Menu
+                opened={contextMenuOpened}
+                onBackdropPress={() => setContextMenuOpened(false)}
+            >
+                <MenuTrigger onPress={() => setContextMenuOpened(true)}>
+                    <ThemedText>
+                        <Ionicons name="ellipsis-vertical-sharp" size={32} />
+                    </ThemedText>
+                </MenuTrigger>
+                <MenuOptions
+                    customStyles={{
+                        optionsContainer: {
+                            backgroundColor: theme.colors.card,
+                            borderWidth: 1,
+                            borderColor: theme.colors.text
+                        }
+                    }}
+                >
+                    <MenuOption>
+                        <Pressable
+                            style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                padding: 10,
+                            }}
+                            onPress={(e) => {
+                                setContextMenuOpened(false);
+                                props.onPress(e);
+                            }}
+                        >
+                            <ThemedText style={{paddingRight: 10}}>
+                                <Ionicons name="trash-outline" size={24} color={"red"} />
+                            </ThemedText>
+                            <ThemedText style={{color: "red"}}>Delete</ThemedText>
+                        </Pressable>
+                    </MenuOption>
+                </MenuOptions>
+            </Menu>
         </ThemedView>
     );
 }
