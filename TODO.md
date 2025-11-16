@@ -2,6 +2,7 @@
 - action icons interfere with tabs a bit
 - Android dev build seems to require an index.tsx either under app/ or under (tabs)/, but does not like it under app/(tabs)/logs/ - navigates directly to not-found in this case. This is currently worked around by adding an index page under (tabs)/, but with a guard to prevent it from appearing. Is there a nicer way of doing this?
 - react-native-popup-menu: renderers.SlideInMenu isn't visible unless there's several options available - too low on screen. Resolvable?
+- expo-sqlite should work with web but doesn't seem to
 
 # Workout UI
 - toggles for deload weeks, lighter weeks, etc.
