@@ -62,27 +62,29 @@ function AddExerciseModal(props: AddExerciseModalProps) {
             // keyboard, mysteriously, will not open without a short timeout here
             onShow={() => setTimeout(() => nameRef.current?.focus(), 100)}
         >
-            <ThemedView
-                style={{
-                    flex: 1,
-                    padding: 30,
-                }}
-            >
-                <ThemedText style={{...styles.h1, marginBottom: 20}}>Add Exercise</ThemedText>
-                <ThemedTextInput
-                    ref={nameRef}
-                    style={{marginBottom: 10}}
-                    value={name}
-                    placeholder="Exercise name"
-                    onChangeText={(text) => setName(text)}
-                />
-                <Button title="Save" onPress={() => {
-                    if (name) {
-                        props.handleCreateExercise(name);
-                        setName("");
-                    }
-                }} />
-            </ThemedView>
+            <SafeAreaView style={{flex: 1}}>
+                <ThemedView
+                    style={{
+                        flex: 1,
+                        padding: 30,
+                    }}
+                >
+                    <ThemedText style={{...styles.h1, marginBottom: 20}}>Add Exercise</ThemedText>
+                    <ThemedTextInput
+                        ref={nameRef}
+                        style={{marginBottom: 10}}
+                        value={name}
+                        placeholder="Exercise name"
+                        onChangeText={(text) => setName(text)}
+                    />
+                    <Button title="Save" onPress={() => {
+                        if (name) {
+                            props.handleCreateExercise(name);
+                            setName("");
+                        }
+                    }} />
+                </ThemedView>
+            </SafeAreaView>
         </Modal>
     )
 }
@@ -146,16 +148,18 @@ export default function ExercisesScreen() {
                     padding: 10,
                 }}
         >
-            <FlatList
-                data={exercises}
-                renderItem={({item}) => (
-                    <Exercise {...item} />
-                )}
-                keyExtractor={exercise => exercise.id.toString()}
-                ListHeaderComponent={<ExercisesHeader onPress={handleOpenCreateExercise} />}
-                stickyHeaderIndices={[0]}
-            />
-            <AddExerciseModal visible={modalVisible} setVisible={setModalVisible} handleCreateExercise={handleCreateExercise} />
+            <ThemedView style={{flex: 1}}>
+                <FlatList
+                    data={exercises}
+                    renderItem={({item}) => (
+                        <Exercise {...item} />
+                    )}
+                    keyExtractor={exercise => exercise.id.toString()}
+                    ListHeaderComponent={<ExercisesHeader onPress={handleOpenCreateExercise} />}
+                    stickyHeaderIndices={[0]}
+                />
+                <AddExerciseModal visible={modalVisible} setVisible={setModalVisible} handleCreateExercise={handleCreateExercise} />
+            </ThemedView>
         </SafeAreaView>
     );
 }

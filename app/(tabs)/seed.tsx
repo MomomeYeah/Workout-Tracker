@@ -143,6 +143,9 @@ export default function SeedScreen() {
             }}
         >
             <View style={{marginBottom: 20}}>
+                <Button title="Clear All Data" onPress={truncateData}  />
+            </View>
+            <View style={{marginBottom: 20}}>
                 <Button title="Seed Realistic Test Data" onPress={handleSeedRealistic}  />
             </View>
             <View>

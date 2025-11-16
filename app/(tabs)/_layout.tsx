@@ -1,9 +1,9 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "@react-navigation/native";
 import { Tabs } from "expo-router";
 import { useColorScheme } from "react-native";
 
-export default function RootLayout() {
+export default function TabsLayout() {
     const theme = useTheme();
     const colorScheme = useColorScheme();
     const activeTintColor = colorScheme === "dark" ? "#ffd33d" : "#ff723d";
@@ -51,6 +51,12 @@ export default function RootLayout() {
                     ),
                 }}
             />
+            {/* Android build appears to require the existence of an index route directly under (tabs) */}
+            {/* in order to be able to navigate to logs/index. We guard here to prevent it from appearing */}
+            {/* in the UI */}
+            <Tabs.Protected guard={false}>
+                <Tabs.Screen name="index" />
+            </Tabs.Protected>
         </Tabs>
     );
 }

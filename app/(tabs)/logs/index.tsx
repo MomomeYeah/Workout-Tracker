@@ -113,6 +113,16 @@ function LogsHeader() {
     );
 }
 
+function EmptyLogsPlaceholder() {
+    return (
+        <ThemedCard>
+            <ThemedText style={{...styles.h2, marginBottom: 10}}>No workouts yet</ThemedText>
+            <ThemedText style={{marginBottom: 10}}>Your workouts will appear here.</ThemedText>
+            <ThemedText>Press the add button below to create your first workout.</ThemedText>
+        </ThemedCard>
+    )
+}
+
 export default function Index() {
     const logDB = drizzle(useSQLiteContext(), { schema });
     useDrizzleStudio(useSQLiteContext());
@@ -179,6 +189,7 @@ export default function Index() {
                 keyExtractor={log => log.id.toString()}
                 ListHeaderComponent={<LogsHeader />}
                 stickyHeaderIndices={[0]}
+                ListEmptyComponent={<EmptyLogsPlaceholder />}
             />
             <AddItemButton onPress={handleCreateWorkout} />
         </SafeAreaView>

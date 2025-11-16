@@ -1,3 +1,6 @@
+# Bugs / Oddities
+- Android dev build seems to require an index.tsx either under app/ or under (tabs)/, but does not like it under app/(tabs)/logs/ - navigates directly to not-found in this case. This is currently worked around by adding an index page under (tabs)/, but with a guard to prevent it from appearing. Is there a nicer way of doing this?
+
 # Workout UI
 - toggles for deload weeks, lighter weeks, etc.
 - UI for supersets, drop sets, myo-reps, etc.

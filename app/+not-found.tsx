@@ -17,7 +17,7 @@ export default function NotFoundScreen() {
                 }}
             >
                 <Link
-                    href="/"
+                    href="/logs"
                     style={{
                         fontSize: 20,
                         textDecorationLine: 'underline',

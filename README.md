@@ -5,6 +5,7 @@ This is a weightlifting workout tracking app build with [React Native](https://r
 # Useful Resources
 
 - https://github.com/drizzle-team/drizzle-studio-expo
+- https://docs.expo.dev/develop/development-builds/create-a-build/
 
 ## Get started
 

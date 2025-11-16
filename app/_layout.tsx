@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { migrate } from "drizzle-orm/expo-sqlite/migrator";
 import { Stack } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
+import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from "react-native";
 
 export default function RootLayout() {
@@ -29,6 +30,7 @@ export default function RootLayout() {
                 <Stack>
                     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 </Stack>
+                <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
             </ThemeProvider>
         </SQLiteProvider>
     )
