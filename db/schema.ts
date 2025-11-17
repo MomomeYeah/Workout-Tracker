@@ -47,6 +47,7 @@ export type LogExercisesTableSelectType = typeof LogExercisesTable.$inferSelect 
 };
 
 export const SetType = ["Warmup", "Normal", "Drop Set"] as const;
+export type SetTypeKeys = typeof SetType[number];
 
 export const LogExerciseSetsTable = sqliteTable("LogExerciseSets", {
     id: int().primaryKey({ autoIncrement: true }),

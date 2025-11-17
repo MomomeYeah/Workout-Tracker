@@ -22,8 +22,12 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
     const [reps, setReps] = useState(set.reps?.toString());
     const [notes, setNotes] = useState(set.notes);
 
+    const [contextMenuOpened, setContextMenuOpened] = useState(false);
+    const theme = useTheme();
+
     const logDB = drizzle(useSQLiteContext(), { schema });
     type UpdateProps = {
+        newSetType?: schema.SetTypeKeys,
         newWeight?: string,
         newReps?: string,
         newNotes?: string
@@ -32,6 +36,7 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
         await logDB
             .update(schema.LogExerciseSetsTable)
             .set({
+                set_type: props.newSetType ?? set.set_type,
                 weight: Number(props.newWeight ?? weight),
                 reps: Number(props.newReps ?? reps),
                 notes: props.newNotes ?? notes,
@@ -105,13 +110,62 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
                     handleOnUpdate({newNotes: notes});
                 }}
             />
-            <ThemedText>
-                <Ionicons
-                    name="trash-outline"
-                    size={24}
-                    onPress={handleDeleteSet}
-                />
-            </ThemedText>
+            <Menu
+                opened={contextMenuOpened}
+                onBackdropPress={() => setContextMenuOpened(false)}
+            >
+                <MenuTrigger onPress={() => setContextMenuOpened(true)}>
+                    <ThemedText>
+                        <Ionicons name="ellipsis-vertical-sharp" size={24} />
+                    </ThemedText>
+                </MenuTrigger>
+                <MenuOptions
+                    customStyles={{
+                        optionsContainer: {
+                            backgroundColor: theme.colors.card,
+                            borderWidth: 1,
+                            borderColor: theme.colors.text,
+                            width: "75%",
+                            padding: 5,
+                        }
+                    }}
+                >
+                    <MenuOption>
+                        <ThemedText style={{marginLeft: 5, marginTop: 5, color: theme.colors.text}}>Set Type</ThemedText>
+                    </MenuOption>
+                    <MenuOption>
+                        <SegmentedControl
+                            style={{height: 40, width: "100%"}}
+                            tabs={[...schema.SetType]}
+                            initialIndex={schema.SetType.indexOf(set.set_type)}
+                            onChange={(index) => {
+                                const newSetType = schema.SetType[index];
+                                handleOnUpdate({newSetType: newSetType});
+                            }}
+                        />
+                    </MenuOption>
+                    <MenuOption>
+                        <Pressable
+                            style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 10,
+                                marginBottom: 10,
+                            }}
+                            onPress={(e) => {
+                                setContextMenuOpened(false);
+                                handleDeleteSet();
+                            }}
+                        >
+                            <ThemedText style={{paddingRight: 10}}>
+                                <Ionicons name="trash-outline" size={24} color={"red"} />
+                            </ThemedText>
+                            <ThemedText style={{color: "red"}}>Delete</ThemedText>
+                        </Pressable>
+                    </MenuOption>
+                </MenuOptions>
+            </Menu>
         </View>
     );
 }
@@ -255,8 +309,6 @@ function WorkoutHeader(props: WorkoutHeaderProps) {
     function handleBack() {
         router.back();
     }
-
-    console.log(theme.colors)
 
     return (
         <ThemedView
