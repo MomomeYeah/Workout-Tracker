@@ -4,6 +4,11 @@
 - react-native-popup-menu: renderers.SlideInMenu isn't visible unless there's several options available - too low on screen. Resolvable?
 - expo-sqlite should work with web but doesn't seem to
 
+# UI Tweaks
+- Improve styling / readability of workout options menu
+- For some reason, ThemedText within Menu does not pick up changes to theme correctly
+- SegmentedControl visibly moves to initially selected value
+
 # Workout UI
 - toggles for deload weeks, lighter weeks, etc.
 - UI for supersets, drop sets, myo-reps, etc.

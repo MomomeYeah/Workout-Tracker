@@ -71,7 +71,10 @@ function Workout(item: schema.LogsTableSelectType) {
                             justifyContent: "space-between"
                         }}
                     >
-                        <ThemedText style={{...styles.h3}}>{item.title}</ThemedText>
+                        <ThemedText style={{...styles.h3}}>
+                            {item.title}
+                            { item.workout_type === "Deload" ? " (Deload)" : ""}
+                        </ThemedText>
                         <ThemedText>{duration}</ThemedText>
                     </View>
                     <View>

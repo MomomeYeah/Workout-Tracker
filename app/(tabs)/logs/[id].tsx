@@ -15,6 +15,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, GestureResponderEvent, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, View } from "react-native";
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { SafeAreaView } from "react-native-safe-area-context";
+import SegmentedControl from "react-native-segmented-control-2";
 
 function Set(set: schema.LogExerciseSetsTableSelectType) {
     const [weight, setWeight] = useState(set.weight?.toString());
@@ -242,7 +243,9 @@ function AddExerciseModal(props: AddExerciseModalProps) {
 }
 
 export type WorkoutHeaderProps = {
-    onPress: (event: GestureResponderEvent) => void,
+    handleDeleteWorkout: (event: GestureResponderEvent) => void,
+    workoutType: schema.WorkoutTypeKeys | undefined,
+    setWorkoutType: (workoutType: schema.WorkoutTypeKeys) => void,
 }
 function WorkoutHeader(props: WorkoutHeaderProps) {
     const [contextMenuOpened, setContextMenuOpened] = useState(false);
@@ -252,6 +255,8 @@ function WorkoutHeader(props: WorkoutHeaderProps) {
     function handleBack() {
         router.back();
     }
+
+    console.log(theme.colors)
 
     return (
         <ThemedView
@@ -270,7 +275,10 @@ function WorkoutHeader(props: WorkoutHeaderProps) {
                     onPress={handleBack}
                 />
             </ThemedText>
-            <ThemedText style={{...styles.h1}}>Workout</ThemedText>
+            <ThemedText style={{...styles.h1}}>
+                Workout
+                { props.workoutType === "Deload" ? " (Deload)" : ""}
+            </ThemedText>
             <Menu
                 opened={contextMenuOpened}
                 onBackdropPress={() => setContextMenuOpened(false)}
@@ -285,21 +293,38 @@ function WorkoutHeader(props: WorkoutHeaderProps) {
                         optionsContainer: {
                             backgroundColor: theme.colors.card,
                             borderWidth: 1,
-                            borderColor: theme.colors.text
+                            borderColor: theme.colors.text,
+                            width: "75%",
+                            padding: 5,
                         }
                     }}
                 >
+                    <MenuOption>
+                        <ThemedText style={{marginLeft: 5, marginTop: 5, color: theme.colors.text}}>Workout Type</ThemedText>
+                    </MenuOption>
+                    <MenuOption>
+                        <SegmentedControl
+                            style={{height: 40, width: "100%"}}
+                            tabs={[...schema.WorkoutType]}
+                            initialIndex={props.workoutType ? schema.WorkoutType.indexOf(props.workoutType) : 0}
+                            onChange={(index) => {
+                                const newWorkoutType = schema.WorkoutType[index];
+                                props.setWorkoutType(newWorkoutType);
+                            }}
+                        />
+                    </MenuOption>
                     <MenuOption>
                         <Pressable
                             style={{
                                 flex: 1,
                                 flexDirection: "row",
                                 alignItems: "center",
-                                padding: 10,
+                                marginTop: 10,
+                                marginBottom: 10,
                             }}
                             onPress={(e) => {
                                 setContextMenuOpened(false);
-                                props.onPress(e);
+                                props.handleDeleteWorkout(e);
                             }}
                         >
                             <ThemedText style={{paddingRight: 10}}>
@@ -318,6 +343,7 @@ export default function Workout() {
     const { id } = useLocalSearchParams();
     const logDB = drizzle(useSQLiteContext(), { schema });
 
+    const [workoutType, setWorkoutType] = useState<schema.WorkoutTypeKeys | undefined>(undefined);
     const [title, setTitle] = useState("");
     const [bodyWeight, setBodyWeight] = useState("");
 
@@ -338,6 +364,7 @@ export default function Workout() {
                 });
 
             if (log) {
+                setWorkoutType(log.workout_type);
                 setTitle(log.title);
                 setBodyWeight(log.bodyWeight?.toString() ?? "");
                 setStartTime(new Date(log.startTime));
@@ -396,6 +423,7 @@ export default function Workout() {
     }
 
     type UpdateProps = {
+        newWorkoutType?: schema.WorkoutTypeKeys,
         newTitle?: string,
         newBodyWeight?: string,
         newStartTime?: Date,
@@ -406,6 +434,7 @@ export default function Workout() {
         await logDB
             .update(schema.LogsTable)
             .set({
+                workout_type: updateProps.newWorkoutType ?? workoutType,
                 title: updateProps.newTitle ?? title,
                 bodyWeight: Number(updateProps.newBodyWeight ?? bodyWeight),
                 startTime: (updateProps.newStartTime ?? startTime).getTime(),
@@ -439,7 +468,23 @@ export default function Workout() {
                     }}
                 >
                     <ScrollView>
-                        <WorkoutHeader onPress={handleOnDelete} />
+                        <WorkoutHeader
+                            handleDeleteWorkout={handleOnDelete}
+                            workoutType={workoutType}
+                            setWorkoutType={(value) => {
+                                setWorkoutType(value);
+                                handleOnUpdate({newWorkoutType: value});
+                            }}
+                        />
+                        {/* <SegmentedControl
+                            values={[...schema.WorkoutType]}
+                            selectedIndex={workoutType ? schema.WorkoutType.indexOf(workoutType) : 0}
+                            onChange={(event) => {
+                                const selectedIndex = event.nativeEvent.selectedSegmentIndex;
+                                const newWorkoutType = schema.WorkoutType[selectedIndex];
+                                // props.setWorkoutType(newWorkoutType);
+                            }}
+                        /> */}
                         <View
                             style={{
                                 flex: 1,

@@ -9,6 +9,7 @@ export const ExercisesTable = sqliteTable("Exercises", {
 export type ExercisesTableSelectType = typeof ExercisesTable.$inferSelect;
 
 export const WorkoutType = ["Normal", "Deload"] as const;
+export type WorkoutTypeKeys = typeof WorkoutType[number];
 
 export const LogsTable = sqliteTable("Logs", {
     id: int().primaryKey({ autoIncrement: true }),
