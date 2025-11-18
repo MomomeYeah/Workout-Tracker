@@ -46,6 +46,10 @@ export type LogExercisesTableSelectType = typeof LogExercisesTable.$inferSelect 
     "sets": Array<LogExerciseSetsTableSelectType>,
 };
 
+export type LogExercisesHistorySelectType = LogExercisesTableSelectType & {
+    "log": typeof LogsTable.$inferSelect
+};
+
 export const SetType = ["Warmup", "Normal", "Drop Set"] as const;
 export type SetTypeKeys = typeof SetType[number];
 

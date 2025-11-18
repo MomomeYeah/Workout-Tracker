@@ -90,7 +90,10 @@ export default function SeedScreen() {
 
         const logCount = 100;
         for (let i = 0; i < logCount; i++) {
+            // set starttime to a random day within the past year
             const startTime = new Date();
+            startTime.setDate(startTime.getDate() - Math.floor(Math.random() * 365));
+            // add a random number of minutes to the endTime - up to one hour
             const endTime = new Date(startTime.getTime() + Math.floor(Math.random() * 3600000));
 
             // insert log record

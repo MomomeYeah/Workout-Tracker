@@ -172,6 +172,7 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
 
 function Exercise({log_exercise_id}: {log_exercise_id: number}) {
     const logDB = drizzle(useSQLiteContext(), { schema });
+    const theme = useTheme();
 
     const { data: exercise } = useLiveQuery(
         logDB.query.LogExercisesTable.findFirst({
@@ -200,6 +201,16 @@ function Exercise({log_exercise_id}: {log_exercise_id: number}) {
             .values({
                 log_exercise_id: log_exercise_id
             });
+    }
+
+    const router = useRouter();
+    function handleGotoExerciseHistory() {
+        router.navigate({
+            pathname: "/(tabs)/logs/history",
+            params: {
+                exercise_id: exercise?.exercise_id,
+            },
+        });
     }
 
     return (
@@ -231,7 +242,32 @@ function Exercise({log_exercise_id}: {log_exercise_id: number}) {
                     ))
                 }
             </View>
-            <Button title="Add Set" onPress={handleCreateSet} />
+            <View
+                style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                }}
+            >
+                <Pressable onPress={handleCreateSet}>
+                    <ThemedText
+                        style={{
+                            ...styles.h3,
+                            color: theme.colors.primary,
+                        }}
+                    >
+                        Add Set
+                    </ThemedText>
+                </Pressable>
+                <ThemedText>
+                    <Ionicons
+                        name="timer-outline"
+                        size={24}
+                        onPress={handleGotoExerciseHistory}
+                    />
+                </ThemedText>
+            </View>
         </ThemedCard>
     );
 }
@@ -528,15 +564,6 @@ export default function Workout() {
                                 handleOnUpdate({newWorkoutType: value});
                             }}
                         />
-                        {/* <SegmentedControl
-                            values={[...schema.WorkoutType]}
-                            selectedIndex={workoutType ? schema.WorkoutType.indexOf(workoutType) : 0}
-                            onChange={(event) => {
-                                const selectedIndex = event.nativeEvent.selectedSegmentIndex;
-                                const newWorkoutType = schema.WorkoutType[selectedIndex];
-                                // props.setWorkoutType(newWorkoutType);
-                            }}
-                        /> */}
                         <View
                             style={{
                                 flex: 1,
