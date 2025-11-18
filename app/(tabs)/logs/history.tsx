@@ -5,7 +5,7 @@ import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
@@ -79,7 +79,6 @@ function HistoryHeader() {
 
 export default function ExerciseHistory() {
     const { exercise_id } = useLocalSearchParams();
-    const router = useRouter();
 
     const logDB = drizzle(useSQLiteContext(), { schema });
     const [exercises, setExercises] = useState<Array<schema.LogExercisesHistorySelectType>>([]);
@@ -96,9 +95,7 @@ export default function ExerciseHistory() {
                         },
                     });
 
-                if(log_exercises) {
-                    setExercises(log_exercises.sort((a, b) => b.log.startTime - a.log.startTime));
-                }
+                setExercises(log_exercises.sort((a, b) => b.log.startTime - a.log.startTime));
             })();
         }, []);
 

@@ -1,7 +1,9 @@
 # Next Steps
-- UI for exercise categories
-- Edit screen for exercises
+- Ability to edit exercises + categories
 - Different styling for deload / heavy workouts
+- Consider using tab / stack headers
+- UI for routines
+- Modify themes rather than referencing "red" for delete actions
 
 # Bugs / Oddities
 - action icons interfere with tabs a bit

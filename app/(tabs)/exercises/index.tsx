@@ -6,11 +6,14 @@ import ThemedView from "@/components/themed-view";
 import { styles } from "@/constants/theme";
 import * as schema from "@/db/schema";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useTheme } from "@react-navigation/native";
 import { eq, sql } from "drizzle-orm";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
-import { Button, FlatList, GestureResponderEvent, Modal, TextInput } from "react-native";
+import { Button, FlatList, GestureResponderEvent, Modal, Pressable, TextInput } from "react-native";
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from "react-native-popup-menu";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function Exercise(exercise: schema.ExercisesTableSelectType) {
@@ -90,9 +93,13 @@ function AddExerciseModal(props: AddExerciseModalProps) {
 }
 
 export type ExercisesHeaderProps = {
-    onPress: (event: GestureResponderEvent) => void,
+    handleCreateExercise: (event: GestureResponderEvent) => void,
+    handleEditCategories: (event: GestureResponderEvent) => void,
 }
 function ExercisesHeader(props: ExercisesHeaderProps) {
+    const [contextMenuOpened, setContextMenuOpened] = useState(false);
+    const theme = useTheme();
+    
     return (
         <ThemedView
             style={{
@@ -105,13 +112,66 @@ function ExercisesHeader(props: ExercisesHeaderProps) {
         >
             <ThemedInvisibleIcon />
             <ThemedText style={{...styles.h1}}>Exercises</ThemedText>
-            <ThemedText>
-                <Ionicons
-                    name="add-outline"
-                    size={32}
-                    onPress={props.onPress}
-                />
-            </ThemedText>
+            <Menu
+                opened={contextMenuOpened}
+                onBackdropPress={() => setContextMenuOpened(false)}
+            >
+                <MenuTrigger onPress={() => setContextMenuOpened(true)}>
+                    <ThemedText>
+                        <Ionicons name="ellipsis-vertical-sharp" size={32} />
+                    </ThemedText>
+                </MenuTrigger>
+                <MenuOptions
+                    customStyles={{
+                        optionsContainer: {
+                            backgroundColor: theme.colors.card,
+                            borderWidth: 1,
+                            borderColor: theme.colors.text,
+                            width: "75%",
+                            padding: 5,
+                        }
+                    }}
+                >
+                    <MenuOption>
+                        <Pressable
+                            style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 10,
+                                marginBottom: 10,
+                            }}
+                            onPress={(e) => {
+                                setContextMenuOpened(false);
+                                props.handleCreateExercise(e);
+                            }}
+                        >
+                            <ThemedText style={{paddingRight: 10}}>
+                                <Ionicons name="add-outline" size={24} color={theme.colors.text} />
+                            </ThemedText>
+                            <ThemedText style={{color: theme.colors.text}}>Add Exercise</ThemedText>
+                        </Pressable>
+                        <Pressable
+                            style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 10,
+                                marginBottom: 10,
+                            }}
+                            onPress={(e) => {
+                                setContextMenuOpened(false);
+                                props.handleEditCategories(e);
+                            }}
+                        >
+                            <ThemedText style={{paddingRight: 10}}>
+                                <Ionicons name="grid-outline" size={24} color={theme.colors.text} />
+                            </ThemedText>
+                            <ThemedText style={{color: theme.colors.text}}>Edit Categories</ThemedText>
+                        </Pressable>
+                    </MenuOption>
+                </MenuOptions>
+            </Menu>
         </ThemedView>
     );
 }
@@ -132,6 +192,13 @@ export default function ExercisesScreen() {
             });
 
         setModalVisible(false);
+    }
+
+    const router = useRouter();
+    function handleEditCategories() {
+        router.navigate({
+            pathname: "/(tabs)/exercises/categories",
+        });
     }
 
     const { data: exercises, error, updatedAt } = useLiveQuery(
@@ -155,7 +222,11 @@ export default function ExercisesScreen() {
                         <Exercise {...item} />
                     )}
                     keyExtractor={exercise => exercise.id.toString()}
-                    ListHeaderComponent={<ExercisesHeader onPress={handleOpenCreateExercise} />}
+                    ListHeaderComponent={
+                        <ExercisesHeader
+                            handleCreateExercise={handleOpenCreateExercise}
+                            handleEditCategories={handleEditCategories} />
+                    }
                     stickyHeaderIndices={[0]}
                 />
                 <AddExerciseModal visible={modalVisible} setVisible={setModalVisible} handleCreateExercise={handleCreateExercise} />

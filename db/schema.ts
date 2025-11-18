@@ -6,6 +6,8 @@ export const ExerciseCategoriesTable = sqliteTable("ExerciseCategories", {
     name: text().notNull(),
 });
 
+export type ExerciseCategoriesTableSelectType = typeof ExerciseCategoriesTable.$inferSelect;
+
 export const ExercisesTable = sqliteTable("Exercises", {
     id: int().primaryKey({ autoIncrement: true }),
     name: text().notNull(),
