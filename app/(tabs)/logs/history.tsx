@@ -41,6 +41,7 @@ function HistoryItem(item: schema.LogExercisesHistorySelectType) {
             {
                 item.sets.map((set) => {
                     return <View
+                        key={set.id}
                         style={{
                             flex: 1,
                             flexDirection: "row",
@@ -111,7 +112,7 @@ export default function ExerciseHistory() {
                 renderItem={({item}) => (
                     <HistoryItem {...item} />
                 )}
-                keyExtractor={log => log.id.toString()}
+                keyExtractor={item => item.id.toString()}
                 ListHeaderComponent={<HistoryHeader />}
                 stickyHeaderIndices={[0]}
             />

@@ -1,3 +1,8 @@
+# Next Steps
+- UI for exercise categories
+- Edit screen for exercises
+- Different styling for deload / heavy workouts
+
 # Bugs / Oddities
 - action icons interfere with tabs a bit
 - Android dev build seems to require an index.tsx either under app/ or under (tabs)/, but does not like it under app/(tabs)/logs/ - navigates directly to not-found in this case. This is currently worked around by adding an index page under (tabs)/, but with a guard to prevent it from appearing. Is there a nicer way of doing this?
@@ -11,6 +16,8 @@
 
 # Workout UI
 - toggles for deload weeks, lighter weeks, etc.
+    - search workout types from workout index screen
+    - different styling for e.g. deload weeks
 - UI for supersets, drop sets, myo-reps, etc.
 
 # Workout Assist

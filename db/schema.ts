@@ -1,14 +1,21 @@
 import { relations } from "drizzle-orm";
-import { int, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { int, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const ExercisesTable = sqliteTable("Exercises", {
+export const ExerciseCategoriesTable = sqliteTable("ExerciseCategories", {
     id: int().primaryKey({ autoIncrement: true }),
     name: text().notNull(),
 });
 
+export const ExercisesTable = sqliteTable("Exercises", {
+    id: int().primaryKey({ autoIncrement: true }),
+    name: text().notNull(),
+    exercise_category: int().references(() => ExerciseCategoriesTable.id, {onDelete: "cascade"}),
+    single_limb: integer({ mode: "boolean" }).notNull().default(false),
+});
+
 export type ExercisesTableSelectType = typeof ExercisesTable.$inferSelect;
 
-export const WorkoutType = ["Normal", "Deload"] as const;
+export const WorkoutType = ["Normal", "Deload", "Heavy"] as const;
 export type WorkoutTypeKeys = typeof WorkoutType[number];
 
 export const LogsTable = sqliteTable("Logs", {

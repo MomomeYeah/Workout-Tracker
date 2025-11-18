@@ -13,22 +13,42 @@ export default function SeedScreen() {
         await logDB.delete(schema.LogExercisesTable);
         await logDB.delete(schema.LogsTable);
         await logDB.delete(schema.ExercisesTable);
+        await logDB.delete(schema.ExerciseCategoriesTable);
 
         console.log("Tables cleared");
     }
 
-    async function handleSeedRealistic() {
-        await truncateData();
+    async function createExercises() {
+        seedData.exercise_categories.map(async (exercise_category) => {
+            await logDB
+                .insert(schema.ExerciseCategoriesTable)
+                .values({
+                    name: exercise_category.name
+                });
+        });
+
+        console.log("Exercise categories created");
 
         seedData.exercises.map(async (exercise) => {
+            const exercise_category_id = await logDB
+                .select()
+                .from(schema.ExerciseCategoriesTable)
+                .where(eq(schema.ExerciseCategoriesTable.name, exercise.category));
+
             await logDB
                 .insert(schema.ExercisesTable)
                 .values({
-                    name: exercise.name
+                    name: exercise.name,
+                    exercise_category: exercise_category_id[0].id
                 });
         });
 
         console.log("Exercises created");
+    }
+
+    async function handleSeedRealistic() {
+        await truncateData();
+        await createExercises();
 
         seedData.logs.map(async (log) => {
             await logDB
@@ -76,17 +96,7 @@ export default function SeedScreen() {
 
     async function handleSeedVolume() {
         await truncateData();
-
-        const exerciseCount = 100;
-        for (let i = 0; i < exerciseCount; i++) {
-            await logDB
-                .insert(schema.ExercisesTable)
-                .values({
-                    name: `Exercise ${i}`
-                });
-        }
-
-        console.log("Exercises created");
+        await createExercises();
 
         const logCount = 100;
         for (let i = 0; i < logCount; i++) {

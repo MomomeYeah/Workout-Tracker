@@ -1,15 +1,30 @@
+export const exercise_categories = [
+    {name: "Abs"},
+    {name: "Back"},
+    {name: "Biceps"},
+    {name: "Cardio"},
+    {name: "Chest"},
+    {name: "Legs"},
+    {name: "Shoulders"},
+    {name: "Triceps"},
+];
+
 export const exercises = [
-    {name: "Incline bench press"},
-    {name: "Military press"},
-    {name: "Bentover row"},
-    {name: "Close-grip pulldown"},
-    {name: "Hex-bar deadlift"},
-    {name: "Seated leg curls"},
-    {name: "Leg extensions"},
-    {name: "Dumbbell bench press"},
-    {name: "Seated shoulder press"},
-    {name: "Close-grip cable row"},
-    {name: "Pulldown"},
+    {name: "Barbell Curl", category: "Biceps"},
+    {name: "Bentover row", category: "Back"},
+    {name: "Close-grip cable row", category: "Back"},
+    {name: "Close-grip pulldown", category: "Back"},
+    {name: "Crunch", category: "Abs"},
+    {name: "Dumbbell bench press", category: "Chest"},
+    {name: "Hex-bar deadlift", category: "Back"},
+    {name: "Incline bench press", category: "Chest"},
+    {name: "Jogging", category: "Cardio"},
+    {name: "Leg extensions", category: "Legs"},
+    {name: "Military press", category: "Shoulders"},
+    {name: "Pulldown", category: "Back"},
+    {name: "Seated leg curls", category: "Legs"},
+    {name: "Seated shoulder press", category: "Shoulders"},
+    {name: "Tricep Extensions", category: "Triceps"},
 ];
 
 export const logs = [
