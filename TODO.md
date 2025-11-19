@@ -1,5 +1,7 @@
 # Next Steps
 - Ability to edit exercises + categories
+    - Need a Select widget for exercise edit
+    - Is there a nice way to edit a type (e.g. Exercise) with multiple fields without specific set methods for each one?
 - Different styling for deload / heavy workouts
 - Consider using tab / stack headers
 - UI for routines

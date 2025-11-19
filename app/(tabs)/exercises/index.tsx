@@ -11,18 +11,29 @@ import { eq, sql } from "drizzle-orm";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { Button, FlatList, GestureResponderEvent, Modal, Pressable, TextInput } from "react-native";
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from "react-native-popup-menu";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-function Exercise(exercise: schema.ExercisesTableSelectType) {
+type ExerciseContextProps = {
+    exercise: schema.ExercisesTableSelectType | null
+}
+const ExerciseContext = createContext({} as ExerciseContextProps);
+
+type ExerciseProps = {
+    exercise: schema.ExercisesTableSelectType,
+    handleEditExercise: (context: schema.ExercisesTableSelectType | null) => void
+}
+function Exercise(props: ExerciseProps) {
     const logDB = drizzle(useSQLiteContext(), { schema });
+    const [contextMenuOpened, setContextMenuOpened] = useState(false);
+    const theme = useTheme();
 
     async function handleDeleteExercise() {
         await logDB
             .delete(schema.ExercisesTable)
-            .where(eq(schema.ExercisesTable.id, exercise.id))
+            .where(eq(schema.ExercisesTable.id, props.exercise.id))
     }
 
     return (
@@ -34,24 +45,96 @@ function Exercise(exercise: schema.ExercisesTableSelectType) {
                 justifyContent: "space-between",
             }}
         >
-            <ThemedText>
-                {exercise.name}
-            </ThemedText>
-            <ThemedText>
-                <Ionicons name="trash-outline" size={24} onPress={handleDeleteExercise} />
-            </ThemedText>
+            <Pressable
+                style={{flexGrow: 1}}
+                onPress={() => {
+                    setContextMenuOpened(false);
+                    props.handleEditExercise(props.exercise);
+                }}
+            >
+                <ThemedText>
+                    {props.exercise.name}
+                </ThemedText>
+            </Pressable>
+            <Menu
+                opened={contextMenuOpened}
+                onBackdropPress={() => setContextMenuOpened(false)}
+            >
+                <MenuTrigger onPress={() => setContextMenuOpened(true)}>
+                    <ThemedText>
+                        <Ionicons name="ellipsis-vertical-sharp" size={24} />
+                    </ThemedText>
+                </MenuTrigger>
+                <MenuOptions
+                    customStyles={{
+                        optionsContainer: {
+                            backgroundColor: theme.colors.card,
+                            borderWidth: 1,
+                            borderColor: theme.colors.text,
+                            width: "75%",
+                            padding: 5,
+                        }
+                    }}
+                >
+                    <MenuOption>
+                        <Pressable
+                            style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 10,
+                                marginBottom: 10,
+                            }}
+                            onPress={() => {
+                                setContextMenuOpened(false);
+                                props.handleEditExercise(props.exercise);
+                            }}
+                        >
+                            <ThemedText style={{paddingRight: 10}}>
+                                <Ionicons name="pencil-outline" size={24} color={theme.colors.text} />
+                            </ThemedText>
+                            <ThemedText style={{color: theme.colors.text}}>Edit</ThemedText>
+                        </Pressable>
+                    </MenuOption>
+                    <MenuOption>
+                        <Pressable
+                            style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 10,
+                                marginBottom: 10,
+                            }}
+                            onPress={(e) => {
+                                setContextMenuOpened(false);
+                                handleDeleteExercise();
+                            }}
+                        >
+                            <ThemedText style={{paddingRight: 10}}>
+                                <Ionicons name="trash-outline" size={24} color={"red"} />
+                            </ThemedText>
+                            <ThemedText style={{color: "red"}}>Delete</ThemedText>
+                        </Pressable>
+                    </MenuOption>
+                </MenuOptions>
+            </Menu>
         </ThemedCard>
     );
 }
 
 type AddExerciseModalProps = {
     visible: boolean,
-    setVisible: Dispatch<SetStateAction<boolean>>
-    handleCreateExercise: (name: string) => Promise<void>,
+    setVisible: Dispatch<SetStateAction<boolean>>,
+    handleSaveExercise: (name: string) => Promise<void>,
 }
 function AddExerciseModal(props: AddExerciseModalProps) {
-    const [name, setName] = useState("");
+    const context = useContext(ExerciseContext);
+    const [name, setName] = useState(context.exercise?.name);
     const nameRef = useRef<TextInput>(null);
+    
+    useEffect(() => {
+        setName(context.exercise?.name);
+    }, [context.exercise]);
 
     return (
         <Modal
@@ -59,7 +142,6 @@ function AddExerciseModal(props: AddExerciseModalProps) {
             visible={props.visible}
             onRequestClose={() => {
                 props.setVisible(false);
-                setName("");
             }}
             transparent={true}
             // keyboard, mysteriously, will not open without a short timeout here
@@ -82,8 +164,7 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                     />
                     <Button title="Save" onPress={() => {
                         if (name) {
-                            props.handleCreateExercise(name);
-                            setName("");
+                            props.handleSaveExercise(name);
                         }
                     }} />
                 </ThemedView>
@@ -178,20 +259,32 @@ function ExercisesHeader(props: ExercisesHeaderProps) {
 
 export default function ExercisesScreen() {
     const logDB = drizzle(useSQLiteContext(), { schema });
-    const [modalVisible, setModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [editModalContext, setEditModalContext] = useState<schema.ExercisesTableSelectType | null>(null);
 
-    function handleOpenCreateExercise() {
-        setModalVisible(true);
+    function handleOpenCreateExercise(context: schema.ExercisesTableSelectType | null) {
+        setEditModalVisible(true);
+        setEditModalContext(context);
     }
 
-    async function handleCreateExercise(name: string) {
-        await logDB
-            .insert(schema.ExercisesTable)
-            .values({
-                name: name
-            });
+    async function handleSaveExercise(name: string) {
+        if (editModalContext) {
+            await logDB
+                .update(schema.ExercisesTable)
+                .set({
+                    name: name
+                })
+                .where(eq(schema.ExercisesTable.id, editModalContext.id));
+        } else {
+            await logDB
+                .insert(schema.ExercisesTable)
+                .values({
+                    name: name
+                });
+        }
 
-        setModalVisible(false);
+        setEditModalVisible(false);
+        setEditModalContext(null);
     }
 
     const router = useRouter();
@@ -219,17 +312,19 @@ export default function ExercisesScreen() {
                 <FlatList
                     data={exercises}
                     renderItem={({item}) => (
-                        <Exercise {...item} />
+                        <Exercise exercise={item} handleEditExercise={handleOpenCreateExercise} />
                     )}
                     keyExtractor={exercise => exercise.id.toString()}
                     ListHeaderComponent={
                         <ExercisesHeader
-                            handleCreateExercise={handleOpenCreateExercise}
+                            handleCreateExercise={() => handleOpenCreateExercise(null)}
                             handleEditCategories={handleEditCategories} />
                     }
                     stickyHeaderIndices={[0]}
                 />
-                <AddExerciseModal visible={modalVisible} setVisible={setModalVisible} handleCreateExercise={handleCreateExercise} />
+                <ExerciseContext.Provider value={{exercise: editModalContext}}>
+                    <AddExerciseModal visible={editModalVisible} setVisible={setEditModalVisible} handleSaveExercise={handleSaveExercise} />
+                </ExerciseContext.Provider>
             </ThemedView>
         </SafeAreaView>
     );
