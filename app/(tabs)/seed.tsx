@@ -39,7 +39,7 @@ export default function SeedScreen() {
                 .insert(schema.ExercisesTable)
                 .values({
                     name: exercise.name,
-                    exercise_category: exercise_category_id[0].id
+                    exercise_category_id: exercise_category_id[0].id
                 });
         });
 

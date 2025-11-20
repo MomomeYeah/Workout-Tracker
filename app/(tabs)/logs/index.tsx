@@ -151,7 +151,11 @@ export default function Index() {
                         with: {
                             exercises: {
                                 with: {
-                                    exercise: true,
+                                    exercise: {
+                                        with: {
+                                            exercise_category: true
+                                        }
+                                    },
                                     sets: true,
                                 }
                             }

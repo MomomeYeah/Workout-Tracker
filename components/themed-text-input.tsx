@@ -1,3 +1,4 @@
+import { styles } from "@/constants/theme";
 import { useTheme } from "@react-navigation/native";
 import { Ref } from "react";
 import { TextInput, TextInputProps } from "react-native";
@@ -10,14 +11,11 @@ export default function ThemedTextInput({style, ref, ...rest}: ThemedTextInputPr
 
     return <TextInput ref={ref} placeholderTextColor={theme.colors.text} style={[
         {
+            ...styles.input,
             backgroundColor: theme.colors.background,
             borderWidth: 1,
             borderColor: theme.colors.border,
             color: theme.colors.text,
-            paddingTop: 15,
-            paddingBottom: 15,
-            paddingLeft: 15,
-            paddingRight: 15,
         },
         style,
     ]} {...rest} />

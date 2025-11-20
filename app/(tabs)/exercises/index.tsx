@@ -1,4 +1,5 @@
 import ThemedCard from "@/components/themed-card";
+import ThemedDropdown from "@/components/themed-dropdown";
 import ThemedInvisibleIcon from "@/components/themed-invisible-icon";
 import ThemedText from "@/components/themed-text";
 import ThemedTextInput from "@/components/themed-text-input";
@@ -53,7 +54,7 @@ function Exercise(props: ExerciseProps) {
                 }}
             >
                 <ThemedText>
-                    {props.exercise.name}
+                    {props.exercise.name} ({props.exercise.exercise_category?.name})
                 </ThemedText>
             </Pressable>
             <Menu
@@ -125,15 +126,30 @@ function Exercise(props: ExerciseProps) {
 type AddExerciseModalProps = {
     visible: boolean,
     setVisible: Dispatch<SetStateAction<boolean>>,
-    handleSaveExercise: (name: string) => Promise<void>,
+    handleSaveExercise: (name: string, exercise_category_id: number) => Promise<void>,
 }
 function AddExerciseModal(props: AddExerciseModalProps) {
     const context = useContext(ExerciseContext);
+    const logDB = drizzle(useSQLiteContext(), { schema });
     const [name, setName] = useState(context.exercise?.name);
+    const [exerciseCategory, setExerciseCategory] = useState(context.exercise?.exercise_category_id);
+    const [isExerciseCategoryFocus, setIsExerciseCategoryFocus] = useState(false);
+    const [exerciseCategories, setExerciseCategories] = useState<Array<schema.ExerciseCategoriesTableSelectType>>([]);
     const nameRef = useRef<TextInput>(null);
+    const theme = useTheme();
+
+    useEffect(() => {
+        (async () => {
+            const exercise_categories = await logDB
+                .query.ExerciseCategoriesTable.findMany();
+
+            setExerciseCategories(exercise_categories);
+        })();
+    }, []);
     
     useEffect(() => {
         setName(context.exercise?.name);
+        setExerciseCategory(context.exercise?.exercise_category_id);
     }, [context.exercise]);
 
     return (
@@ -152,6 +168,7 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                     style={{
                         flex: 1,
                         padding: 30,
+                        paddingTop: 30
                     }}
                 >
                     <ThemedText style={{...styles.h1, marginBottom: 20}}>Add Exercise</ThemedText>
@@ -162,9 +179,23 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                         placeholder="Exercise name"
                         onChangeText={(text) => setName(text)}
                     />
+                    <ThemedDropdown
+                        style={{marginBottom: 10, marginTop: 0}}
+                        data={exerciseCategories}
+                        labelField="name"
+                        valueField="id"
+                        placeholder={! isExerciseCategoryFocus ? 'Select exercise category' : '...'}
+                        value={exerciseCategory}
+                        onFocus={() => setIsExerciseCategoryFocus(true)}
+                        onBlur={() => setIsExerciseCategoryFocus(false)}
+                        onChange={item => {
+                            setExerciseCategory(item.id);
+                            setIsExerciseCategoryFocus(false);
+                        }}
+                    />
                     <Button title="Save" onPress={() => {
-                        if (name) {
-                            props.handleSaveExercise(name);
+                        if (name && exerciseCategory) {
+                            props.handleSaveExercise(name, exerciseCategory);
                         }
                     }} />
                 </ThemedView>
@@ -267,19 +298,21 @@ export default function ExercisesScreen() {
         setEditModalContext(context);
     }
 
-    async function handleSaveExercise(name: string) {
+    async function handleSaveExercise(name: string, exercise_category_id: number) {
         if (editModalContext) {
             await logDB
                 .update(schema.ExercisesTable)
                 .set({
-                    name: name
+                    name: name,
+                    exercise_category_id: exercise_category_id
                 })
                 .where(eq(schema.ExercisesTable.id, editModalContext.id));
         } else {
             await logDB
                 .insert(schema.ExercisesTable)
                 .values({
-                    name: name
+                    name: name,
+                    exercise_category_id: exercise_category_id
                 });
         }
 
@@ -295,10 +328,12 @@ export default function ExercisesScreen() {
     }
 
     const { data: exercises, error, updatedAt } = useLiveQuery(
-        logDB
-            .select()
-            .from(schema.ExercisesTable)
-            .orderBy(sql`lower(${schema.ExercisesTable.name})`)
+        logDB.query.ExercisesTable.findMany({
+            with: {
+                exercise_category: true
+            },
+            orderBy: sql`lower(${schema.ExercisesTable.name})`
+        })
     );
 
     return (

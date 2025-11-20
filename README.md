@@ -8,6 +8,7 @@ This is a weightlifting workout tracking app build with [React Native](https://r
 - https://docs.expo.dev/develop/development-builds/create-a-build/
 - https://github.com/instea/react-native-popup-menu/tree/master
 - https://github.com/WrathChaos/react-native-segmented-control-2
+- https://github.com/hoaphantn7604/react-native-element-dropdown
 
 ## Get started
 

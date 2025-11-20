@@ -11,11 +11,17 @@ export type ExerciseCategoriesTableSelectType = typeof ExerciseCategoriesTable.$
 export const ExercisesTable = sqliteTable("Exercises", {
     id: int().primaryKey({ autoIncrement: true }),
     name: text().notNull(),
-    exercise_category: int().references(() => ExerciseCategoriesTable.id, {onDelete: "cascade"}),
+    exercise_category_id: int().references(() => ExerciseCategoriesTable.id, {onDelete: "cascade"}),
     single_limb: integer({ mode: "boolean" }).notNull().default(false),
 });
 
-export type ExercisesTableSelectType = typeof ExercisesTable.$inferSelect;
+export const ExercisesRelations = relations(ExercisesTable, ({ one }) => ({
+    exercise_category: one(ExerciseCategoriesTable, { fields: [ExercisesTable.exercise_category_id], references: [ExerciseCategoriesTable.id] }),
+}));
+
+export type ExercisesTableSelectType = typeof ExercisesTable.$inferSelect & {
+    exercise_category: ExerciseCategoriesTableSelectType | null
+};
 
 export const WorkoutType = ["Normal", "Deload", "Heavy"] as const;
 export type WorkoutTypeKeys = typeof WorkoutType[number];

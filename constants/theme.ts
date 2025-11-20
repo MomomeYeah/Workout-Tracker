@@ -13,4 +13,12 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
     },
+    input: {
+        height: 50,
+        fontSize: 14,
+        paddingTop: 15,
+        paddingBottom: 15,
+        paddingLeft: 15,
+        paddingRight: 15,
+    },
 });
