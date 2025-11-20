@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ThemedDropdown({style, ...rest}: DropdownProps<any>) {
     let theme = useTheme();
-
     const insets = useSafeAreaInsets();
 
     return <Dropdown
