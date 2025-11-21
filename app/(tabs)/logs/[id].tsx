@@ -72,38 +72,41 @@ function Set(set: schema.LogExerciseSetsTableSelectType) {
             }}
         >
             <ThemedTextInput
-                style={{
+                containerStyle={{
                     flexGrow: 1,
                     flexBasis: 0,
                     margin: 1,
                 }}
                 keyboardType="numeric"
                 value={weight}
+                label="kg"
                 onChangeText={(weight) => {
                     setWeight(weight);
                     handleOnUpdate({newWeight: weight});
                 }}
             />
             <ThemedTextInput
-                style={{
+                containerStyle={{
                     flexGrow: 1,
                     flexBasis: 0,
                     margin: 1,
                 }}
                 keyboardType="numeric"
                 value={reps}
+                label="reps"
                 onChangeText={(reps) => {
                     setReps(reps);
                     handleOnUpdate({newReps: reps});
                 }}
             />
             <ThemedTextInput
-                style={{
+                containerStyle={{
                     flexGrow: 1,
                     flexBasis: 0,
                     margin: 1,
                 }}
                 value={notes ?? ""}
+                label="notes"
                 multiline
                 onChangeText={(notes) => {
                     setNotes(notes);
@@ -544,7 +547,7 @@ export default function Workout() {
     }
 
     return (
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView style={{flex: 1}} edges={['right', 'left', 'top']}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? "padding" : "height"}
                 style={{flex: 1}}
@@ -553,6 +556,7 @@ export default function Workout() {
                     style={{
                         flex: 1,
                         padding: 10,
+                        paddingBottom: 0,
                     }}
                 >
                     <ScrollView>
@@ -576,28 +580,31 @@ export default function Workout() {
                                         flex: 1,
                                         flexDirection: "row",
                                         flexGrow: 1,
+                                        marginBottom: 5,
                                     }}
                                 >
                                     <ThemedTextInput
-                                        style={{
+                                        containerStyle={{
                                             margin: 1,
                                             flexGrow: 2,
                                             flexBasis: 0,
                                         }}
                                         value={title}
+                                        label="Workout Title"
                                         onChangeText={(text) => {
                                             setTitle(text);
                                             handleOnUpdate({newTitle: text});
                                         }}
                                     />
                                     <ThemedTextInput
-                                        style={{
+                                        containerStyle={{
                                             margin: 1,
                                             flexGrow: 1,
                                             flexBasis: 0,
                                         }}
                                         keyboardType="numeric"
                                         value={bodyWeight}
+                                        label="Body Weight"
                                         onChangeText={(bodyWeight) => {
                                             setBodyWeight(bodyWeight);
                                             handleOnUpdate({newBodyWeight: bodyWeight});
@@ -609,13 +616,14 @@ export default function Workout() {
                                         flex: 1,
                                         flexDirection: "row",
                                         flexGrow: 1,
+                                        marginBottom: 5,
                                     }}
                                 >
                                     <Pressable
                                         style={{flexGrow: 1, margin: 1}}
                                         onPress={() => setShowDatePicker(true)}
                                     >
-                                        <ThemedTextInput editable={false}>
+                                        <ThemedTextInput editable={false} label="Date">
                                             {startTime.toLocaleDateString()}
                                         </ThemedTextInput>
                                     </Pressable>
@@ -648,7 +656,7 @@ export default function Workout() {
                                         style={{flexGrow: 1, margin: 1}}
                                         onPress={() => setShowStartTimePicker(true)}
                                     >
-                                        <ThemedTextInput editable={false}>
+                                        <ThemedTextInput editable={false} label="Start Time">
                                             {startTime.toLocaleTimeString()}
                                         </ThemedTextInput>
                                     </Pressable>
@@ -670,7 +678,7 @@ export default function Workout() {
                                         style={{flexGrow: 1, margin: 1}}
                                         onPress={() => setShowEndTimePicker(true)}
                                     >
-                                        <ThemedTextInput editable={false}>
+                                        <ThemedTextInput editable={false} label="End Time">
                                             {endTime?.toLocaleTimeString()}
                                         </ThemedTextInput>
                                     </Pressable>
@@ -692,10 +700,10 @@ export default function Workout() {
                                 <ThemedTextInput
                                     style={{
                                         flexGrow: 1,
-                                        verticalAlign: "top",
                                         margin: 1
                                     }}
                                     value={notes}
+                                    label="Notes"
                                     multiline
                                     placeholder="Notes"
                                     onChangeText={(text) => {
@@ -711,7 +719,9 @@ export default function Workout() {
                                     ))
                                 }
                             </View>
-                            <Button title="Add Exercise" onPress={handleOpenAddExerciseModal} />
+                            <View style={{marginBottom: 10}}>
+                                <Button title="Add Exercise" onPress={handleOpenAddExerciseModal} />
+                            </View>
                             <AddExerciseModal
                                 visible={addExerciseModalVisible}
                                 setVisible={setAddExerciseModalVisible}

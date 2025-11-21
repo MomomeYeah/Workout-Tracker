@@ -178,10 +178,14 @@ export default function Index() {
     );
 
     return (
-        <SafeAreaView style={{
-            flex: 1,
-            padding: 10,
-        }}>
+        <SafeAreaView
+            style={{
+                flex: 1,
+                padding: 10,
+                paddingBottom: 0,
+            }}
+            edges={['right', 'left', 'top']}
+        >
             <FlatList
                 data={logs}
                 renderItem={({item}) => (

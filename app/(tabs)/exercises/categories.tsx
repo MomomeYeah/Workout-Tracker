@@ -128,7 +128,7 @@ function AddExerciseCategoriesModal(props: AddExerciseCategoriesModalProps) {
     const context = useContext(ExerciseCategoryContext);
     const [name, setName] = useState(context.exercise_category?.name);
     const nameRef = useRef<TextInput>(null);
-        
+
     useEffect(() => {
         setName(context.exercise_category?.name);
     }, [context.exercise_category]);
@@ -138,6 +138,7 @@ function AddExerciseCategoriesModal(props: AddExerciseCategoriesModalProps) {
             animationType="slide"
             visible={props.visible}
             onRequestClose={() => {
+                setName("");
                 props.setVisible(false);
             }}
             transparent={true}
@@ -154,13 +155,15 @@ function AddExerciseCategoriesModal(props: AddExerciseCategoriesModalProps) {
                     <ThemedText style={{...styles.h1, marginBottom: 20}}>Add Exercise Category</ThemedText>
                     <ThemedTextInput
                         ref={nameRef}
-                        style={{marginBottom: 10}}
+                        containerStyle={{marginBottom: 10}}
                         value={name}
+                        label="Exercise Category Name"
                         placeholder="Exercise category name"
                         onChangeText={(text) => setName(text)}
                     />
                     <Button title="Save" onPress={() => {
                         if (name) {
+                            setName("");
                             props.handleSaveExerciseCategory(name);
                         }
                     }} />
@@ -237,26 +240,25 @@ export default function CategoriesScreen() {
     return (
         <SafeAreaView
             style={{
-                    flex: 1,
-                    padding: 10,
-                }}
+                flex: 1,
+                padding: 10,
+            }}
+            edges={['right', 'left', 'top']}
         >
-            <ThemedView style={{flex: 1}}>
-                <FlatList
-                    data={categories}
-                    renderItem={({item}) => (
-                        <ExerciseCategory exercise_category={item} handleEditExerciseCategory={handleOpenCreateExerciseCategory} />
-                    )}
-                    keyExtractor={exercise => exercise.id.toString()}
-                    ListHeaderComponent={
-                        <ExerciseCategoriesHeader handleCreateExerciseCategory={() => handleOpenCreateExerciseCategory(null)} />
-                    }
-                    stickyHeaderIndices={[0]}
-                />
-                <ExerciseCategoryContext.Provider value={{exercise_category: editModalContext}}>
-                    <AddExerciseCategoriesModal visible={modalVisible} setVisible={setModalVisible} handleSaveExerciseCategory={handleSaveExerciseCategory} />
-                </ExerciseCategoryContext.Provider>
-            </ThemedView>
+            <FlatList
+                data={categories}
+                renderItem={({item}) => (
+                    <ExerciseCategory exercise_category={item} handleEditExerciseCategory={handleOpenCreateExerciseCategory} />
+                )}
+                keyExtractor={exercise => exercise.id.toString()}
+                ListHeaderComponent={
+                    <ExerciseCategoriesHeader handleCreateExerciseCategory={() => handleOpenCreateExerciseCategory(null)} />
+                }
+                stickyHeaderIndices={[0]}
+            />
+            <ExerciseCategoryContext.Provider value={{exercise_category: editModalContext}}>
+                <AddExerciseCategoriesModal visible={modalVisible} setVisible={setModalVisible} handleSaveExerciseCategory={handleSaveExerciseCategory} />
+            </ExerciseCategoryContext.Provider>
         </SafeAreaView>
     )
 }

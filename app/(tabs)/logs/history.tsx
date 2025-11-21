@@ -90,7 +90,6 @@ export default function ExerciseHistory() {
                         where: eq(schema.LogExercisesTable.exercise_id, +exercise_id),
                         with: {
                             log: true,
-                            exercise: true,
                             sets: true,
                         },
                     });
@@ -100,10 +99,14 @@ export default function ExerciseHistory() {
         }, []);
 
     return (
-        <SafeAreaView style={{
-            flex: 1,
-            padding: 10,
-        }}>
+        <SafeAreaView
+            style={{
+                flex: 1,
+                padding: 10,
+                paddingBottom: 0,
+            }}
+            edges={['right', 'left', 'top']}
+        >
             <FlatList
                 data={exercises}
                 renderItem={({item}) => (

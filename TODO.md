@@ -1,10 +1,10 @@
 # Next Steps
-- Add label element to ThemedTextInput
-- Is there a nice way to edit a type (e.g. Exercise) with multiple fields without specific set methods for each one?
+- Theme-level padding / margin sizes
 - Different styling for deload / heavy workouts
 - Consider using tab / stack headers
-- UI for routines
 - Modify themes rather than referencing "red" for delete actions
+- UI for routines
+- Is there a nice way to edit a type (e.g. Exercise) with multiple fields without specific set methods for each one? Could also prevent needing to clear modal fields on close / save
 
 # Bugs / Oddities
 - action icons interfere with tabs a bit

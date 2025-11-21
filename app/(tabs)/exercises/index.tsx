@@ -155,11 +155,18 @@ function AddExerciseModal(props: AddExerciseModalProps) {
         setSingleLimb(context.exercise?.single_limb);
     }, [context.exercise]);
 
+    function clearFields() {
+        setName("");
+        setExerciseCategory(undefined);
+        setSingleLimb(undefined);
+    }
+
     return (
         <Modal
             animationType="slide"
             visible={props.visible}
             onRequestClose={() => {
+                clearFields();
                 props.setVisible(false);
             }}
             transparent={true}
@@ -177,8 +184,9 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                     <ThemedText style={{...styles.h1, marginBottom: 20}}>Add Exercise</ThemedText>
                     <ThemedTextInput
                         ref={nameRef}
-                        style={{marginBottom: 10}}
+                        containerStyle={{marginBottom: 10}}
                         value={name}
+                        label="Exercise Name"
                         placeholder="Exercise name"
                         onChangeText={(text) => setName(text)}
                     />
@@ -189,6 +197,7 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                         valueField="id"
                         placeholder={! isExerciseCategoryFocus ? 'Select exercise category' : '...'}
                         value={exerciseCategory}
+                        label="Exercise Category"
                         onFocus={() => setIsExerciseCategoryFocus(true)}
                         onBlur={() => setIsExerciseCategoryFocus(false)}
                         onChange={item => {
@@ -207,6 +216,7 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                         valueField="value"
                         placeholder={! isSingleLimbFocus ? 'Single limb?' : '...'}
                         value={singleLimb}
+                        label="Single Limb?"
                         onFocus={() => setIsSingleLimbFocus(true)}
                         onBlur={() => setIsSingleLimbFocus(false)}
                         onChange={item => {
@@ -216,6 +226,7 @@ function AddExerciseModal(props: AddExerciseModalProps) {
                     />
                     <Button title="Save" onPress={() => {
                         if (name && exerciseCategory && singleLimb !== undefined) {
+                            clearFields();
                             props.handleSaveExercise(name, exerciseCategory, singleLimb);
                         }
                     }} />
@@ -364,26 +375,26 @@ export default function ExercisesScreen() {
             style={{
                     flex: 1,
                     padding: 10,
+                    paddingBottom: 0,
                 }}
+            edges={['right', 'left', 'top']}
         >
-            <ThemedView style={{flex: 1}}>
-                <FlatList
-                    data={exercises}
-                    renderItem={({item}) => (
-                        <Exercise exercise={item} handleEditExercise={handleOpenCreateExercise} />
-                    )}
-                    keyExtractor={exercise => exercise.id.toString()}
-                    ListHeaderComponent={
-                        <ExercisesHeader
-                            handleCreateExercise={() => handleOpenCreateExercise(null)}
-                            handleEditCategories={handleEditCategories} />
-                    }
-                    stickyHeaderIndices={[0]}
-                />
-                <ExerciseContext.Provider value={{exercise: editModalContext}}>
-                    <AddExerciseModal visible={editModalVisible} setVisible={setEditModalVisible} handleSaveExercise={handleSaveExercise} />
-                </ExerciseContext.Provider>
-            </ThemedView>
+            <FlatList
+                data={exercises}
+                renderItem={({item}) => (
+                    <Exercise exercise={item} handleEditExercise={handleOpenCreateExercise} />
+                )}
+                keyExtractor={exercise => exercise.id.toString()}
+                ListHeaderComponent={
+                    <ExercisesHeader
+                        handleCreateExercise={() => handleOpenCreateExercise(null)}
+                        handleEditCategories={handleEditCategories} />
+                }
+                stickyHeaderIndices={[0]}
+            />
+            <ExerciseContext.Provider value={{exercise: editModalContext}}>
+                <AddExerciseModal visible={editModalVisible} setVisible={setEditModalVisible} handleSaveExercise={handleSaveExercise} />
+            </ExerciseContext.Provider>
         </SafeAreaView>
     );
 }
